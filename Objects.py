@@ -27,6 +27,15 @@ def getDirection(node):
 def genID(N=5):
     ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
+#Parking, streets are all nodes.
+#Attributes:
+#   type: Either 0/1 0 -> street  1-> parking
+#   start, end: tuple
+#   capactiy: integer
+#   comment: string
+#   id: assigned id for easy identification
+#   exit: whether this node is a designated evacuation location 
+#Each node is connected to the nodes that have start as this node's start.
 class Node:
     TYPE_STREET = 0
     TYPE_PARKING = 1
@@ -47,11 +56,13 @@ class Node:
         self.exit = exit
         self.__cars = []
         self.__children = []
+
     def enterCar(self, car):
         assert(self.canEnterCar())
         assert(isinstance(car, Car))
         self.__cars.append(car)
         car.setCurrentNode(self)
+
     def exitCar(self):
         return self.__cars.pop()
     def carCount(self):
@@ -67,6 +78,8 @@ class Node:
         return deepcopy(self.__children)
     def getDirection(self):
         return getDirection(self)
+    
+    #To string to be used by print()
     def __repr__(self):
         if(self.type == Node.TYPE_STREET):
             nodeType = "\nStreet"
@@ -93,6 +106,7 @@ class Node:
                 string += nodeType + " ID: " + str(child.id) + "\n"
         return string
 
+#Car object to keep track of the car's current location and its path.
 class Car:
     def __init__(self, initial):
         assert(isinstance(initial, Node))
@@ -101,8 +115,7 @@ class Car:
         self.__path = [initial]
         self.__nextEvent = None
     def setCurrentNode(self, currentNode):
-        assert(isinstance(initial, Node))
-        assert((initial.type == Node.TYPE_STREET))
+        assert(isinstance(currentNode, Node))
         self.__currentNode = currentNode
         self.__path.append(currentNode)
     def getDirection(self):
