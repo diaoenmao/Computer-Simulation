@@ -122,3 +122,31 @@ class Car:
         return getDirection(self.__currentNode)
     def __str__(self):
         return "Car at location: " + str(self.__currentNode.start) + " next event: " + str(self.__nextEvent)
+
+class Event:
+    TYPE_IN_PARKING = 0
+    TYPE_ON_STREET = 1
+    TYPE_AT_INTERSECTION = 2
+    TYPE_EXIT = 3
+    def __init__(self, car, type):
+        assert(isinstance(car, Car))
+        self.car = car
+        self.type = type
+        if(type == TYPE_IN_PARKING):
+            self.eventHandler = handleParking
+        elif(type == TYPE_ON_STREET):
+            self.eventHandler = handleOnStreet
+        elif(type == TYPE_AT_INTERSECTION):
+            self.eventHandler = handleIntersection
+        elif(type == TYPE_EXIT):
+            self.eventHandler = handleExit
+        else:
+            raise Exception('Uknown Event type: ' + type)
+    def handleParking(self):
+        pass
+    def handleOnStreet(self):
+        pass
+    def handleIntersection(self):
+        pass
+    def handleExit(self):
+        pass
