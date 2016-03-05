@@ -105,14 +105,8 @@ def printDistribution():
     l = 5.0
     seed (20160224)
     e = [genRandom (l, type='exponential') for i in range (n)]
-    (e_stat,e_p) = stats.kstest(e, 'expon')
-    print(e_stat,e_p)
     u = [genRandom (l, type='uniform') for i in range (n)]
-    (u_stat,u_p) = stats.kstest(u, 'uniform')
-    print(u_stat,u_p)
     g = [genRandom (l, type='normal') for i in range (n)]
-    (g_stat,g_p) = stats.kstest(g, 'norm')
-    print(g_stat,g_p)
     plt.figure(1)
     plt.hist (e)
     plt.show()
