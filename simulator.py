@@ -44,11 +44,12 @@ def showGraph(nodes):
     G=nx.Graph()
     colors = []
     for node in nodes:
-        G.add_node(node.id, pos=node.end)
         children = node.getChildren()
         if(node.exit):
+            G.add_node(node.id, pos=node.end)
             colors.append(EXIT_NODE_COLOR)
         else:
+            G.add_node(node.id, pos=node.start)
             if(node.type == Node.TYPE_STREET):
                 colors.append(STREET_NODE_COLOR)
             else:
@@ -58,7 +59,7 @@ def showGraph(nodes):
     pos=nx.get_node_attributes(G,'pos')
     pos=nx.spring_layout(G, pos=pos, fixed=pos.keys())
     plt.figure(4)
-    nx.draw_networkx(G,pos,node_color=colors)
+    nx.draw(G,pos,node_color=colors)
     plt.show()
 
 #Init function that builds the world using the parsed rows
@@ -71,21 +72,30 @@ def buildGraph(rows):
         #Get node type, whether street or parking
         if(row[0] == 'Street'):
             nodeType = Node.TYPE_STREET
+            capacity = int(math.sqrt((int(row[1]) - int(row[3])) ** 2 + (int(row[2]) - int(row[4])) ** 2) \
+                * UNIT_LENGTH / AVERAGE_CAR_SPACE_LENGTH)
         elif(row[0] == 'Parking'):
             nodeType = Node.TYPE_PARKING
+            capacity = int(row[5])
         else:
             raise Exception('Uknown type: ' + row[0])
 
         #Create node( type, (x1, x2), (y1, y2), capacity, id, comment)
-        node = Node(nodeType, (int(row[1]), int(row[2])), (int(row[3]), int(row[4])), int(row[5]), i, comment=row[6])
+        node = Node(nodeType, (int(row[1]), int(row[2])), (int(row[3]), int(row[4])), capacity, i, comment=row[6])
         nodes.append(node)
-        
+
         #Set evcuation destinations
         if(node.end == (760,555) or node.end == (723,32) or node.end == (733,270)):
             node.setExit(True)
-        i += 1
 
-        #Set initial cars in parking lotss
+        #Create return path if not exit node and is a 2 way street
+        if(row[0] == 'Street' and int(row[5]) == 2 and not node.exit):
+            i += 1
+            node = Node(nodeType, (int(row[3]), int(row[4])), (int(row[1]), int(row[2])), capacity, i, comment=row[6])
+            nodes.append(node)
+
+        i += 1
+        #Set initial cars in parking lots
         if(nodeType == Node.TYPE_PARKING):
             for n in range(node.capacity):
                 node.enterCar(Car(node))
@@ -101,7 +111,7 @@ def simulate():
     #heappush (events, x_i)
 
 def printDistribution():
-    n = 250
+    n = 2500
     l = 5.0
     seed (20160224)
     e = [genRandom (l, type='exponential') for i in range (n)]
@@ -117,7 +127,7 @@ def printDistribution():
     plt.hist (g)
     plt.show()
 
-printDistribution()    
+#printDistribution()    
 rows = processInput('world.csv')
 nodes = buildGraph(rows)
 showGraph(nodes)

@@ -32,9 +32,9 @@ def genRandom(l, type='exponential'):
     if(type == 'exponential'):
         return -l*log(1-random())
     elif(type == 'uniform'):
-        return random()
+        return np.random.uniform()
     elif(type == 'normal'):
-        return gauss(0,1)
+        return np.random.normal()
     
 def genID(N=5):
     ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
@@ -108,14 +108,14 @@ class Node:
             for car in self.__cars:
                 string += "\t" + str(i) + ": " + str(car) + "\n"
                 i += 1
-        if(len(self.__children) > 0):
-            string += "Children: \n"
-            for child in self.__children:
-                if(child.type == Node.TYPE_STREET):
-                    nodeType = "\tStreet"
-                else:
-                    nodeType = "\tParking"
-                string += nodeType + " ID: " + str(child.id) + "\n"
+            if(len(self.__children) > 0):
+                string += "Children: \n"
+                for child in self.__children:
+                    if(child.type == Node.TYPE_STREET):
+                        nodeType = "\tStreet"
+                    else:
+                        nodeType = "\tParking"
+                    string += nodeType + " ID: " + str(child.id) + "\n"
         return string
 
 #Car object to keep track of the car's current location and its path.
