@@ -3,7 +3,7 @@ from parameters import *
 from copy import deepcopy
 from random import random, seed, gauss
 from math import log
-import numpy as np
+from numpy.random import exponential
 
 def getDirection(node):
     (x1,y1) = node.start
@@ -30,7 +30,7 @@ def getDirection(node):
 
 def genRandom(l, type='exponential'):
     if(type == 'exponential'):
-        return np.random.exponential(l)
+        return -l*log(1-random())
     elif(type == 'uniform'):
         return random()
     elif(type == 'normal'):
