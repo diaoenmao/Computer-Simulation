@@ -140,8 +140,9 @@ class Event:
     TYPE_ON_STREET = 1
     TYPE_AT_INTERSECTION = 2
     TYPE_EXIT = 3
-    def __init__(self, car, type):
+    def __init__(self, car, type, time):
         assert(isinstance(car, Car))
+        assert(time > 0)
         self.car = car
         self.type = type
         if(type == TYPE_IN_PARKING):
@@ -154,6 +155,7 @@ class Event:
             self.eventHandler = handleExit
         else:
             raise Exception('Uknown Event type: ' + type)
+        self.time = time
     def handleParking(self):
         pass
     def handleOnStreet(self):
