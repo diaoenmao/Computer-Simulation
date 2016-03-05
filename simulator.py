@@ -1,6 +1,7 @@
 import csv
 import math
 import networkx as nx
+import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
 from Objects import *
@@ -66,6 +67,7 @@ def showGraph(nodes):
 def buildGraph(rows):
     nodes = []
     i = 1
+    events = []
     for row in rows:
         assert(len(row) == 7)
 
@@ -98,17 +100,24 @@ def buildGraph(rows):
         #Set initial cars in parking lots
         if(nodeType == Node.TYPE_PARKING):
             for n in range(node.capacity):
-                node.enterCar(Car(node))
+                car = Car(node)
+                time = genRandom(10, type='normal')
+                heappush(events, (time, Event(car, Event.TYPE_IN_PARKING, time)))
+                node.enterCar(car)
     
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.start)
     for node in nodes:
         findNode(nodes, node, 0, len(nodes) - 1)
-    return nodes
+    return (nodes, events)
 
 def simulate():
-    events = []
-    #heappush (events, x_i)
+    global simulationTime = 0
+    rows = processInput('world.csv')
+    (nodes, events) = buildGraph(rows)
+    while len(events) > 0:
+        (time, event) = heappop(events)
+        event.eventHandler(events, event)
 
 def printDistribution():
     n = 2500
@@ -126,9 +135,3 @@ def printDistribution():
     plt.figure(3)
     plt.hist (g)
     plt.show()
-
-#printDistribution()    
-rows = processInput('world.csv')
-nodes = buildGraph(rows)
-showGraph(nodes)
-print(nodes)

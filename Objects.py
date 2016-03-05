@@ -1,9 +1,10 @@
 import types
+import numpy as np
 from parameters import *
 from copy import deepcopy
 from random import random, seed, gauss
 from math import log
-from numpy.random import exponential
+
 
 def getDirection(node):
     (x1,y1) = node.start
@@ -28,13 +29,13 @@ def getDirection(node):
             deg -= 180
     return deg
 
-def genRandom(l, type='exponential'):
+def genRandom(l=5, type='exponential'):
     if(type == 'exponential'):
-        return -l*log(1-random())
+        return np.random.exponential() + l
     elif(type == 'uniform'):
-        return np.random.uniform()
+        return np.random.uniform()*l
     elif(type == 'normal'):
-        return np.random.normal()
+        return np.random.normal(loc=l)
     
 def genID(N=5):
     ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
@@ -135,6 +136,15 @@ class Car:
     def __str__(self):
         return "Car at location: " + str(self.__currentNode.start) + " next event: " + str(self.__nextEvent)
 
+def handleParking(events, event):
+    pass
+def handleOnStreet(events, event):
+    pass
+def handleIntersection(events, event):
+    pass
+def handleExit(events, event):
+    pass
+
 class Event:
     TYPE_IN_PARKING = 0
     TYPE_ON_STREET = 1
@@ -145,22 +155,14 @@ class Event:
         assert(time > 0)
         self.car = car
         self.type = type
-        if(type == TYPE_IN_PARKING):
+        if(type == Event.TYPE_IN_PARKING):
             self.eventHandler = handleParking
-        elif(type == TYPE_ON_STREET):
+        elif(type == Event.TYPE_ON_STREET):
             self.eventHandler = handleOnStreet
-        elif(type == TYPE_AT_INTERSECTION):
+        elif(type == Event.TYPE_AT_INTERSECTION):
             self.eventHandler = handleIntersection
-        elif(type == TYPE_EXIT):
+        elif(type == Event.TYPE_EXIT):
             self.eventHandler = handleExit
         else:
             raise Exception('Uknown Event type: ' + type)
         self.time = time
-    def handleParking(self):
-        pass
-    def handleOnStreet(self):
-        pass
-    def handleIntersection(self):
-        pass
-    def handleExit(self):
-        pass
