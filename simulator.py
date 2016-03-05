@@ -56,6 +56,7 @@ def showGraph(nodes):
             G.add_edge(node.id, child.id)
     pos=nx.get_node_attributes(G,'pos')
     pos=nx.spring_layout(G, pos=pos, fixed=pos.keys())
+    plt.figure(4)
     nx.draw_networkx(G,pos,node_color=colors)
     plt.show()
 
@@ -98,6 +99,24 @@ def simulate():
     events = []
     #heappush (events, x_i)
 
+def printDistribution():
+    n = 250
+    l = 5.0
+    seed (20160224)
+    e = [genRandom (l, type='exponential') for i in range (n)]
+    u = [genRandom (l, type='uniform') for i in range (n)]
+    g = [genRandom (l, type='normal') for i in range (n)]
+    plt.figure(1)
+    plt.hist (e)
+    plt.show()
+    plt.figure(2)
+    plt.hist (u)
+    plt.show()
+    plt.figure(3)
+    plt.hist (g)
+    plt.show()
+
+printDistribution()	
 rows = processInput('world.csv')
 nodes = buildGraph(rows)
 showGraph(nodes)

@@ -1,6 +1,9 @@
 import types
 from parameters import *
 from copy import deepcopy
+from random import random, seed, gauss
+from math import log
+
 def getDirection(node):
     (x1,y1) = node.start
     (x2,y2) = node.end
@@ -24,6 +27,14 @@ def getDirection(node):
             deg -= 180
     return deg
 
+def genRandom(l, type='exponential'):
+    if(type == 'exponential'):
+        return -l*log(1-random())
+    elif(type == 'uniform'):
+        return random()
+    elif(type == 'normal'):
+        return gauss(0,1)
+    
 def genID(N=5):
     ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
