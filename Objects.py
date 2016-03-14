@@ -1,9 +1,9 @@
 import types
 import numpy as np
 from parameters import *
-from copy import deepcopy
 from random import random, seed, gauss
 from math import log
+from heapq import heappush, heappop, heapify
 
 
 def getDirection(node):
@@ -45,6 +45,7 @@ def genID(N=5):
 #   type: Either 0/1 0 -> street  1-> parking
 #   start, end: tuple
 #   capactiy: integer
+#   minTravelTime: minimum travel time to exit this road
 #   comment: string
 #   id: assigned id for easy identification
 #   exit: whether this node is a designated evacuation location 
@@ -52,7 +53,7 @@ def genID(N=5):
 class Node:
     TYPE_STREET = 0
     TYPE_PARKING = 1
-    def __init__(self, type, start, end, capacity, id, comment='', exit=False):
+    def __init__(self, type, start, end, capacity, minTravelTime, id, comment='', exit=False):
         assert(type == Node.TYPE_PARKING or type == Node.TYPE_STREET)
         self.type = type
         assert(len(start) == 2)
@@ -62,9 +63,11 @@ class Node:
         self.end = end
 
         assert(start != end)
+        assert(minTravelTime > 0)
         assert(capacity > 0)
         self.capacity = capacity
         self.comment = comment
+        self.minTravelTime = minTravelTime
         self.id = id
         self.exit = exit
         self.__cars = []
@@ -77,7 +80,7 @@ class Node:
         car.setCurrentNode(self)
 
     def exitCar(self):
-        return self.__cars.pop()
+        return self.__cars.pop(0)
     def carCount(self):
         return len(self.__cars)
     def canEnterCar(self):
@@ -87,8 +90,16 @@ class Node:
     def addChildNode(self, node):
         assert(isinstance(node, Node))
         self.__children.append(node)
+    def getCarPosition(self, car):
+        assert(isinstance(car, Car))
+        ndx = 0
+        for iCar in self.__cars:
+            if(car.id == iCar.id):
+                return ndx
+            ndx += 1
+        return -1
     def getChildren(self):
-        return deepcopy(self.__children)
+        return self.__children
     def getDirection(self):
         return getDirection(self)
     
@@ -121,28 +132,74 @@ class Node:
 
 #Car object to keep track of the car's current location and its path.
 class Car:
-    def __init__(self, initial):
-        assert(isinstance(initial, Node))
-        assert((initial.type == Node.TYPE_PARKING))
-        self.__currentNode = initial
-        self.__path = [initial]
-        self.__nextEvent = None
+    def __init__(self, id):
+        self.__currentNode = None
+        self.__path = []
+        self.id = id
     def setCurrentNode(self, currentNode):
+        assert(currentNode != self.__currentNode)
         assert(isinstance(currentNode, Node))
         self.__currentNode = currentNode
         self.__path.append(currentNode)
     def getDirection(self):
         return getDirection(self.__currentNode)
+    def getCurrentNode(self):
+        return self.__currentNode
     def __str__(self):
-        return "Car at location: " + str(self.__currentNode.start) + " next event: " + str(self.__nextEvent)
+        return "Car id: " + str(self.id) + " at location: " + str(self.__currentNode.start)
 
-def handleParking(events, event):
-    pass
-def handleOnStreet(events, event):
-    pass
-def handleIntersection(events, event):
-    pass
-def handleExit(events, event):
+def handleParking(events, event, time):
+    #Check car's position in exit queue
+    car = event.car
+    assert(car != None)
+    node = car.getCurrentNode()
+    assert(node != None)
+    carNdx = node.getCarPosition(car)
+    assert(carNdx != -1)
+
+    #can't exit
+    if(carNdx > 0):
+        time = time + node.minTravelTime
+        heappush(events, (time, Event(car, Event.TYPE_IN_PARKING)))
+        return
+    
+    if(len(node.getChildren()) > 1):
+        print("Car faces intersection.")
+        #insert new "at intersection" event
+        newEvent = Event(car, Event.TYPE_AT_INTERSECTION) 
+        heappush(events, (time + 1, newEvent))
+    else:
+        print("Car can exit.")
+        #can exit.
+        assert(len(node.getChildren()) == 1)
+        exitedCar = node.exitCar()
+        assert(exitedCar.id == car.id)
+
+        #insert new "on street" event
+        childNode = node.getChildren()[0]
+        childNode.enterCar(car)
+        newTime = time + genRandom(node.minTravelTime)
+        newEvent = Event(car, Event.TYPE_ON_STREET)
+        heappush(events, (newTime, newEvent))
+def handleOnStreet(events, event, time):
+    car = event.car
+    assert(car != None)
+    node = car.getCurrentNode()
+    assert(node != None)
+    exitedCar = node.exitCar()
+    #assert(exitedCar.id == car.id)
+
+
+def handleIntersection(events, event, time):
+    car = event.car
+    assert(car != None)
+    node = car.getCurrentNode()
+    assert(node != None)
+    exitedCar = node.exitCar()
+    assert(exitedCar.id == car.id)
+
+
+def handleExit(events, event, time):
     pass
 
 class Event:
@@ -150,9 +207,8 @@ class Event:
     TYPE_ON_STREET = 1
     TYPE_AT_INTERSECTION = 2
     TYPE_EXIT = 3
-    def __init__(self, car, type, time):
+    def __init__(self, car, type):
         assert(isinstance(car, Car))
-        assert(time > 0)
         self.car = car
         self.type = type
         if(type == Event.TYPE_IN_PARKING):
@@ -165,4 +221,3 @@ class Event:
             self.eventHandler = handleExit
         else:
             raise Exception('Uknown Event type: ' + type)
-        self.time = time

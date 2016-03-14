@@ -67,6 +67,7 @@ def showGraph(nodes):
 def buildGraph(rows):
     nodes = []
     i = 1
+    carId = 1
     events = []
     for row in rows:
         assert(len(row) == 7)
@@ -74,16 +75,19 @@ def buildGraph(rows):
         #Get node type, whether street or parking
         if(row[0] == 'Street'):
             nodeType = Node.TYPE_STREET
-            capacity = int(math.sqrt((int(row[1]) - int(row[3])) ** 2 + (int(row[2]) - int(row[4])) ** 2) \
-                * UNIT_LENGTH / AVERAGE_CAR_SPACE_LENGTH)
+            distance = int( math.sqrt((int(row[1]) - int(row[3])) ** 2 + (int(row[2]) - int(row[4])) ** 2) \
+                * UNIT_LENGTH )
+            capacity = int( 1.0 * distance / AVERAGE_CAR_SPACE_LENGTH )
+            minTravelTime = int( 1.0 * distance / AVERAGE_CAR_SPEED )
         elif(row[0] == 'Parking'):
             nodeType = Node.TYPE_PARKING
             capacity = int(row[5])
+            minTravelTime = 1
         else:
             raise Exception('Uknown type: ' + row[0])
 
-        #Create node( type, (x1, x2), (y1, y2), capacity, id, comment)
-        node = Node(nodeType, (int(row[1]), int(row[2])), (int(row[3]), int(row[4])), capacity, i, comment=row[6])
+        #Create node( type, (x1, x2), (y1, y2), capacity, minTravelTime, id, comment)
+        node = Node(nodeType, (int(row[1]), int(row[2])), (int(row[3]), int(row[4])), capacity, minTravelTime, i, comment=row[6])
         nodes.append(node)
 
         #Set evcuation destinations
@@ -93,17 +97,18 @@ def buildGraph(rows):
         #Create return path if not exit node and is a 2 way street
         if(row[0] == 'Street' and int(row[5]) == 2 and not node.exit):
             i += 1
-            node = Node(nodeType, (int(row[3]), int(row[4])), (int(row[1]), int(row[2])), capacity, i, comment=row[6])
+            node = Node(nodeType, (int(row[3]), int(row[4])), (int(row[1]), int(row[2])), capacity, minTravelTime, i, comment=row[6])
             nodes.append(node)
 
         i += 1
         #Set initial cars in parking lots
         if(nodeType == Node.TYPE_PARKING):
             for n in range(node.capacity):
-                car = Car(node)
-                time = genRandom(10, type='normal')
-                heappush(events, (time, Event(car, Event.TYPE_IN_PARKING, time)))
+                car = Car(carId)
+                time = minTravelTime + n + genRandom(1)
+                heappush(events, (time, Event(car, Event.TYPE_IN_PARKING)))
                 node.enterCar(car)
+                carId += 1
     
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.start)
@@ -112,12 +117,13 @@ def buildGraph(rows):
     return (nodes, events)
 
 def simulate():
-    global simulationTime = 0
+    simulationTime = 0
     rows = processInput('world.csv')
     (nodes, events) = buildGraph(rows)
     while len(events) > 0:
         (time, event) = heappop(events)
-        event.eventHandler(events, event)
+        simulationTime = time
+        event.eventHandler(events, event, simulationTime)
 
 def printDistribution():
     n = 2500
@@ -135,3 +141,5 @@ def printDistribution():
     plt.figure(3)
     plt.hist (g)
     plt.show()
+
+simulate()
