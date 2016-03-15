@@ -8,6 +8,7 @@ from Objects import *
 from parameters import *
 from copy import deepcopy
 from heapq import heappush, heappop, heapify
+import time
 
 #Process the input file and return the rows of split data.
 def processInput(inputFile):
@@ -61,10 +62,9 @@ def showGraph(nodes):
             G.add_edge(node.id, child.id)
     pos=nx.get_node_attributes(G,'pos')
     pos=nx.spring_layout(G, pos=pos, fixed=pos.keys())
-    plt.figure(0)
     nx.draw(G,pos,node_color=colors)
     nx.draw_networkx_labels(G,pos,labels,font_size=16)
-    plt.show()
+    plt.draw()
 
 #Init function that builds the world using the parsed rows
 def buildGraph(rows):
@@ -123,15 +123,17 @@ def simulate():
     simulationTime = 0
     rows = processInput('world.csv')
     (nodes, events) = buildGraph(rows)
-    showGraph(nodes)
     itr = 0
+    plt.show()
     showGraph(nodes)
     while len(events) > 0:
         (time, event) = heappop(events)
         simulationTime = time
         event.eventHandler(events, event, simulationTime)
-        if(itr % 10 == 0):
+        if(itr % 50 == 0):
+            plt.clf()
             showGraph(nodes)
+            plt.pause(0.001)
         itr += 1
 
 def printDistribution():

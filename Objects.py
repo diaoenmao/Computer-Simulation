@@ -5,7 +5,6 @@ from random import random, seed, gauss
 from math import log
 from heapq import heappush, heappop, heapify
 
-
 def getDirection(node):
     (x1,y1) = node.start
     (x2,y2) = node.end
@@ -215,7 +214,6 @@ def handleExit(events, event, time):
     exitedCar = node.exitCar()
     assert(exitedCar.id == car.id)
     print("Car " + str(car.id) + " exits.")
-
 
 class Event:
     TYPE_IN_PARKING = 0
