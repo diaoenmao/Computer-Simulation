@@ -44,7 +44,9 @@ def showGraph(nodes):
     nodes = sorted(nodes, key=lambda node: node.id)
     G=nx.Graph()
     colors = []
+    labels={}
     for node in nodes:
+        labels[node.id] = node.carCount()
         children = node.getChildren()
         if(node.exit):
             G.add_node(node.id, pos=node.end)
@@ -59,8 +61,9 @@ def showGraph(nodes):
             G.add_edge(node.id, child.id)
     pos=nx.get_node_attributes(G,'pos')
     pos=nx.spring_layout(G, pos=pos, fixed=pos.keys())
-    plt.figure(4)
+    plt.figure(0)
     nx.draw(G,pos,node_color=colors)
+    nx.draw_networkx_labels(G,pos,labels,font_size=16)
     plt.show()
 
 #Init function that builds the world using the parsed rows
@@ -77,7 +80,7 @@ def buildGraph(rows):
             nodeType = Node.TYPE_STREET
             distance = int( math.sqrt((int(row[1]) - int(row[3])) ** 2 + (int(row[2]) - int(row[4])) ** 2) \
                 * UNIT_LENGTH )
-            capacity = int( 1.0 * distance / AVERAGE_CAR_SPACE_LENGTH )
+            capacity = int( 1.0 * distance / AVERAGE_CAR_SPACE_LENGTH ) * int(row[5])
             minTravelTime = int( 1.0 * distance / AVERAGE_CAR_SPEED )
         elif(row[0] == 'Parking'):
             nodeType = Node.TYPE_PARKING
@@ -95,7 +98,7 @@ def buildGraph(rows):
             node.setExit(True)
 
         #Create return path if not exit node and is a 2 way street
-        if(row[0] == 'Street' and int(row[5]) == 2 and not node.exit):
+        if(row[0] == 'Street' and not node.exit):
             i += 1
             node = Node(nodeType, (int(row[3]), int(row[4])), (int(row[1]), int(row[2])), capacity, minTravelTime, i, comment=row[6])
             nodes.append(node)
@@ -120,10 +123,16 @@ def simulate():
     simulationTime = 0
     rows = processInput('world.csv')
     (nodes, events) = buildGraph(rows)
+    showGraph(nodes)
+    itr = 0
+    showGraph(nodes)
     while len(events) > 0:
         (time, event) = heappop(events)
         simulationTime = time
         event.eventHandler(events, event, simulationTime)
+        if(itr % 10 == 0):
+            showGraph(nodes)
+        itr += 1
 
 def printDistribution():
     n = 2500

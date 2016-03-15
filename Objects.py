@@ -148,7 +148,7 @@ class Car:
     def __str__(self):
         return "Car id: " + str(self.id) + " at location: " + str(self.__currentNode.start)
 
-def handleParking(events, event, time):
+def genericHandler(events, event, time, type):
     #Check car's position in exit queue
     car = event.car
     assert(car != None)
@@ -159,36 +159,44 @@ def handleParking(events, event, time):
 
     #can't exit
     if(carNdx > 0):
-        time = time + node.minTravelTime
-        heappush(events, (time, Event(car, Event.TYPE_IN_PARKING)))
+        time = time + 1
+        heappush(events, (time, Event(car, type)))
         return
     
     if(len(node.getChildren()) > 1):
-        print("Car faces intersection.")
         #insert new "at intersection" event
         newEvent = Event(car, Event.TYPE_AT_INTERSECTION) 
         heappush(events, (time + 1, newEvent))
     else:
-        print("Car can exit.")
         #can exit.
         assert(len(node.getChildren()) == 1)
         exitedCar = node.exitCar()
         assert(exitedCar.id == car.id)
 
-        #insert new "on street" event
         childNode = node.getChildren()[0]
-        childNode.enterCar(car)
-        newTime = time + genRandom(node.minTravelTime)
-        newEvent = Event(car, Event.TYPE_ON_STREET)
-        heappush(events, (newTime, newEvent))
-def handleOnStreet(events, event, time):
-    car = event.car
-    assert(car != None)
-    node = car.getCurrentNode()
-    assert(node != None)
-    exitedCar = node.exitCar()
-    #assert(exitedCar.id == car.id)
+        #insert exit event
+        if(childNode.exit):
+            newTime = time + 1
+            newEvent = Event(car, Event.TYPE_EXIT)
+            heappush(events, (newTime, newEvent))
+            return
 
+        #insert "on street" event   
+        if(childNode.canEnterCar()):        
+            childNode.enterCar(car)
+            newTime = time + genRandom(node.minTravelTime)
+            newEvent = Event(car, Event.TYPE_ON_STREET)
+            heappush(events, (newTime, newEvent))
+        else:
+            print("Car " + str(car.id) + " is backed up.")
+            time = time + node.minTravelTime
+            heappush(events, (time, Event(car, type)))
+
+def handleParking(events, event, time):
+    genericHandler(events, event, time, Event.TYPE_IN_PARKING)
+
+def handleOnStreet(events, event, time):
+    genericHandler(events, event, time, Event.TYPE_ON_STREET)
 
 def handleIntersection(events, event, time):
     car = event.car
@@ -197,10 +205,17 @@ def handleIntersection(events, event, time):
     assert(node != None)
     exitedCar = node.exitCar()
     assert(exitedCar.id == car.id)
-
+    print(car)
 
 def handleExit(events, event, time):
-    pass
+    car = event.car
+    assert(car != None)
+    node = car.getCurrentNode()
+    assert(node != None)
+    exitedCar = node.exitCar()
+    assert(exitedCar.id == car.id)
+    print("Car " + str(car.id) + " exits.")
+
 
 class Event:
     TYPE_IN_PARKING = 0
