@@ -204,7 +204,7 @@ def genericHandler(events, event, time, type):
     
     #can't exit
     if(carNdx > 0):
-        time = time + 1
+        time = time + carNdx
         heappush(events, (time, Event(car, type)))
         return
     
@@ -253,8 +253,9 @@ def handleIntersection(events, event, time):
     if(COP_MODE):
         childNode = -1
         if(node.getExitChild()):
-            chiledNode = childrenNode[node.getExitChild()[0]] 
-        childNode = childrenNode[node.getChildByCop()]            
+            childNode = childrenNode[node.getExitChild()[0]]
+        else:
+            childNode = childrenNode[node.getChildByCop()]            
     else:
         childNode = -1
         if(node.getExitChild()):
@@ -275,8 +276,6 @@ def handleIntersection(events, event, time):
                 rand = 0
             childNode = childrenNode[rand]
 
-
-        
     if(childNode.exit):
         newTime = time + 1
         newEvent = Event(car, Event.TYPE_EXIT)
