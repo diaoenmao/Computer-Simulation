@@ -36,7 +36,15 @@ def findNode(nodes, node, i, j):
                 j += 1
     else:
         n = int(math.ceil((j-i)/2.0)) + i
-        if(nodes[n].start <= end):
+        if(nodes[n].start == end):
+            while(n >= 0 and nodes[n].start == end):
+                node.addChildNode(nodes[n])
+                n -= 1
+            n = int(math.ceil((j-i)/2.0)) + i
+            while(n < len(nodes) and nodes[n].start == end):
+                node.addChildNode(nodes[n])
+                n += 1
+        elif(nodes[n].start < end):
             findNode(nodes, node, n, j)
         else:
             findNode(nodes, node, i, n)
@@ -50,12 +58,15 @@ def showGraph(nodes):
     colors = []
     labels={}
     labelDict = {}
+    exits = 1
     for node in nodes:
-        children = node.getChildren()
         if(node.exit):
+            G.add_node(len(nodes) + exits, pos=node.start)
             G.add_node(node.id, pos=node.end)
             colors.append(EXIT_NODE_COLOR)
             labels[node.id] = node.carCount()
+            G.add_edge(len(nodes) + exits, node.id)
+            exits += 1
         else:
             if str(node.start) not in labelDict.keys():
                 labelDict[str(node.start)] = node.id
@@ -68,8 +79,12 @@ def showGraph(nodes):
                 colors.append(STREET_NODE_COLOR)
             else:
                 colors.append(PARKING_NODE_COLOR)
-        for child in children:
-            G.add_edge(node.id, child.id)
+
+            children = node.getChildren()
+            for child in children:
+                if(not child.exit):
+                    G.add_edge(node.id, child.id)
+
     pos=nx.get_node_attributes(G,'pos')
     pos=nx.spring_layout(G, pos=pos, fixed=pos.keys())
     nx.draw(G,pos,node_color=colors)
@@ -103,7 +118,7 @@ def buildGraph(rows):
         node = Node(nodeType, (int(row[1]), int(row[2])), (int(row[3]), int(row[4])), capacity, minTravelTime, i, comment=row[6])
         nodes.append(node)
 
-        #Set evcuation destinations
+        #Set evacuation destinations
         if(node.end == (760,555) or node.end == (723,32) or node.end == (733,270)):
             node.setExit(True)
             node.capacity = 10000 #arbitrary big number
