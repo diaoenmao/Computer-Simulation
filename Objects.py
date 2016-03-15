@@ -107,13 +107,22 @@ class Node:
         return childrenNode
     def getChildByCop(self):
         childrenNode = self.getChildren()
-        children_capacity = []
+        children_available = []
         for child in childrenNode:
-            children_capacity.append(child.capacity)
-        return self.__children.index(min(children_capacity))
+            children_available.append(child.carCount()/child.capacity)
+        return children_available.index(min(children_available))
     def getDirection(self):
         return getDirection(self)
-    
+    def isTowardEast(self):
+        direction = self.getDirection()
+        return (direction >= 0 and direction <= 60) or (direction >= 300 and direction <= 360) or self.exit
+    def childrenTowardEast(self):
+        childrenNode = self.getChildren()
+        children_east = []
+        for child in childrenNode:
+            if(child.isTowardEast()):
+                children_east.append(childrenNode.index(child))
+        return children_east
     #To string to be used by print()
     def __repr__(self):
         if(self.type == Node.TYPE_STREET):
@@ -183,6 +192,7 @@ def genericHandler(events, event, time, type):
         print(car)
         print("****** CAR PATH ******")
         print(car.getPath())
+        print(event.type)
     assert(carNdx != -1)
     
     #can't exit
@@ -236,11 +246,24 @@ def handleIntersection(events, event, time):
     if(COP_MODE):
         childNode = childrenNode[node.getChildByCop()]            
     else:
-        if(len(childrenNode) > 1):
-            rand = math.floor(genRandom(len(childrenNode), type = 'uniform'))
-        else:
-            rand = 0
-        childNode = childrenNode[rand]
+        childNode = -1
+        if(EAST_TENDENCY!=0):
+            to_east_node_ndx = node.childrenTowardEast()            
+            if(to_east_node_ndx):
+                east_node = [childrenNode[i] for i in to_east_node_ndx]
+                prob = [genRandom(1,type='uniform') for x in to_east_node_ndx]
+                tendency = [x - (1 - EAST_TENDENCY) for x in prob]
+                if(max(tendency)>0):
+                    max_node_ndx = tendency.index(max(tendency))
+                    childNode = childrenNode[to_east_node_ndx[max_node_ndx]]
+        if(childNode==-1):
+            if(len(childrenNode) > 1):
+                rand = math.floor(genRandom(len(childrenNode), type = 'uniform'))
+            else:
+                rand = 0
+            childNode = childrenNode[rand]
+
+
         
     if(childNode.exit):
         newTime = time + 1
@@ -272,7 +295,7 @@ def handleExit(events, event, time):
         if exitNode.exit:
             exitNode.enterCar(car)
             break
-    print("Car " + str(car.id) + " exits.")
+    #print("Car " + str(car.id) + " exits.")
 
 class Event:
     TYPE_IN_PARKING = 0
