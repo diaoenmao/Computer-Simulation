@@ -94,6 +94,7 @@ def showGraph(nodes, time):
 
 #Init function that builds the world using the parsed rows
 def buildGraph(rows):
+    maxMinTravelTimeforAll = 0
     nodes = []
     i = 1
     carId = 1
@@ -114,7 +115,7 @@ def buildGraph(rows):
             minTravelTime = 1
         else:
             raise Exception('Uknown type: ' + row[0])
-
+        maxMinTravelTimeforAll = minTravelTime if (maxMinTravelTimeforAll < minTravelTime) else maxMinTravelTimeforAll
         #Create node( type, (x1, x2), (y1, y2), capacity, minTravelTime, id, comment)
         node = Node(nodeType, (int(row[1]), int(row[2])), (int(row[3]), int(row[4])), capacity, minTravelTime, i, comment=row[6])
         nodes.append(node)
@@ -143,6 +144,7 @@ def buildGraph(rows):
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.start)
     for node in nodes:
+        node.setmaxMinTravelTimeforAll(maxMinTravelTimeforAll)
         findNode(nodes, node, 0, len(nodes) - 1)
     return (nodes, events)
 

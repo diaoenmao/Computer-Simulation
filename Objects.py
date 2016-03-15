@@ -69,6 +69,7 @@ class Node:
         self.minTravelTime = minTravelTime
         self.id = id
         self.exit = exit
+        self.maxMinTravelTimeforAll = 0
         self.__cars = []
         self.__children = []
 
@@ -88,6 +89,8 @@ class Node:
         return(self.carCount() < self.capacity and self.type == Node.TYPE_STREET)
     def setExit(self, isExit):
         self.exit = isExit
+    def setmaxMinTravelTimeforAll(self, maxTravel):
+        self.maxMinTravelTimeforAll = maxTravel
     def addChildNode(self, node):
         assert(isinstance(node, Node))
         self.__children.append(node)
@@ -105,12 +108,23 @@ class Node:
             if(child.type == Node.TYPE_PARKING):
                 childrenNode.remove(child)
         return childrenNode
+    def getExitChild(self):
+        childrenNode = self.getChildren()
+        exitChild_ndx = []
+        for child in childrenNode:
+            if(child.exit):
+                exitChild_ndx.append(childrenNode.index(child))
+        return exitChild_ndx
     def getChildByCop(self):
         childrenNode = self.getChildren()
         children_available = []
+        children_traveltime = []
+        children_decision = []
         for child in childrenNode:
             children_available.append(child.carCount()/child.capacity)
-        return children_available.index(min(children_available))
+            children_traveltime.append(child.minTravelTime/child.maxMinTravelTimeforAll)
+            children_decision.append(SPACE_TIME_TRADEOFF*child.carCount()/child.capacity + (1-SPACE_TIME_TRADEOFF)*child.minTravelTime/child.maxMinTravelTimeforAll)
+        return children_decision.index(min(children_decision))
     def getDirection(self):
         return getDirection(self)
     def isTowardEast(self):
@@ -118,11 +132,11 @@ class Node:
         return (direction >= 0 and direction <= 60) or (direction >= 300 and direction <= 360) or self.exit
     def childrenTowardEast(self):
         childrenNode = self.getChildren()
-        children_east = []
+        children_east_ndx = []
         for child in childrenNode:
             if(child.isTowardEast()):
                 children_east.append(childrenNode.index(child))
-        return children_east
+        return children_east_ndx
     #To string to be used by print()
     def __repr__(self):
         if(self.type == Node.TYPE_STREET):
@@ -244,9 +258,14 @@ def handleIntersection(events, event, time):
 
     childrenNode = node.getChildren()
     if(COP_MODE):
+        childNode = -1
+        if(node.getExitChild()):
+            chiledNode = childrenNode[node.getExitChild()[0]] 
         childNode = childrenNode[node.getChildByCop()]            
     else:
         childNode = -1
+        if(node.getExitChild()):
+            chiledNode = childrenNode[node.getExitChild()[0]] 
         if(EAST_TENDENCY!=0):
             to_east_node_ndx = node.childrenTowardEast()            
             if(to_east_node_ndx):
