@@ -159,7 +159,7 @@ class Car:
     def __str__(self):
         string = "Car id: " + str(self.id) + " at location: " + str(self.__currentNode.start)
         if(len(self.__currentNode.getChildren())> 0):
-            string += "Children: \n"
+            string += " Children: \n"
             for child in self.__currentNode.getChildren():
                 if(child.type == Node.TYPE_STREET):
                     nodeType = "\tStreet"
@@ -176,37 +176,6 @@ def genericHandler(events, event, time, type):
     assert(node != None)
     carNdx = node.getCarPosition(car)
     assert(carNdx != -1)
-
-    if(event.type == Event.TYPE_AT_INTERSECTION):
-        childrenNode = node.getChildren()
-        if(COP_MODE):
-            childNode = childrenNode[node.getChildByCop]            
-        else:
-            if(len(childrenNode) > 1):
-                rand = int(genRandom(len(childrenNode), type = 'uniform'))
-                while(rand == len(childrenNode)):
-                    rand = int(genRandom(len(childrenNode), type = 'uniform'))
-            else:
-                rand = 0
-            childNode = childrenNode[rand]
-            
-        if(childNode.exit):
-            newTime = time + 1
-            newEvent = Event(car, Event.TYPE_EXIT)
-            heappush(events, (newTime, newEvent))
-            return
-        #insert "on street" event   
-        if(childNode.canEnterCarOnStreet()):        
-            childNode.enterCar(car)
-            newTime = time + genRandom(node.minTravelTime)
-            newEvent = Event(car, Event.TYPE_ON_STREET)
-            heappush(events, (newTime, newEvent))
-        else:
-            print("Car " + str(car.id) + " is backed up.")
-            time = time + node.minTravelTime
-            heappush(events, (time, Event(car, type)))
-        print(car)
-        return
     
     #can't exit
     if(carNdx > 0):
@@ -239,8 +208,8 @@ def genericHandler(events, event, time, type):
             newEvent = Event(car, Event.TYPE_ON_STREET)
             heappush(events, (newTime, newEvent))
         else:
-            print("Car " + str(car.id) + " is backed up.")
-            time = time + node.minTravelTime
+            #print("Car " + str(car.id) + " is backed up.")
+            time = time + 1
             heappush(events, (time, Event(car, type)))
 
 def handleParking(events, event, time):
@@ -250,7 +219,40 @@ def handleOnStreet(events, event, time):
     genericHandler(events, event, time, Event.TYPE_ON_STREET)
 
 def handleIntersection(events, event, time):
-    genericHandler(events, event, time, Event.TYPE_AT_INTERSECTION)
+    car = event.car
+    assert(car != None)
+    node = car.getCurrentNode()
+    assert(node != None)
+
+    childrenNode = node.getChildren()
+    if(COP_MODE):
+        childNode = childrenNode[node.getChildByCop()]            
+    else:
+        if(len(childrenNode) > 1):
+            rand = math.floor(genRandom(len(childrenNode), type = 'uniform'))
+        else:
+            rand = 0
+        childNode = childrenNode[rand]
+        
+    if(childNode.exit):
+        newTime = time + 1
+        newEvent = Event(car, Event.TYPE_EXIT)
+        heappush(events, (newTime, newEvent))
+        return
+
+    #insert "on street" event   
+    if(childNode.canEnterCarOnStreet()):
+        exitedCar = node.exitCar()
+        assert(exitedCar.id == car.id)        
+        childNode.enterCar(car)
+        newTime = time + genRandom(node.minTravelTime)
+        newEvent = Event(car, Event.TYPE_ON_STREET)
+        heappush(events, (newTime, newEvent))
+    else:
+        #print("Car " + str(car.id) + " is backed up.")
+        time += 1
+        heappush(events, (time, Event(car, Event.TYPE_ON_STREET)))
+    return
 
 def handleExit(events, event, time):
     car = event.car
@@ -259,6 +261,10 @@ def handleExit(events, event, time):
     assert(node != None)
     exitedCar = node.exitCar()
     assert(exitedCar.id == car.id)
+    for exitNode in node.getChildren():
+        if exitNode.exit:
+            exitNode.enterCar(car)
+            break
     print("Car " + str(car.id) + " exits.")
 
 class Event:

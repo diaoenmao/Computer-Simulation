@@ -9,6 +9,8 @@ from parameters import *
 from copy import deepcopy
 from heapq import heappush, heappop, heapify
 import time
+import sys
+sys.setrecursionlimit(10**6)
 
 #Process the input file and return the rows of split data.
 def processInput(inputFile):
@@ -41,6 +43,7 @@ def findNode(nodes, node, i, j):
 
 #Graphing function to show the node connections
 def showGraph(nodes):
+    plt.clf()
     nodes = deepcopy(nodes)
     nodes = sorted(nodes, key=lambda node: node.id)
     G=nx.Graph()
@@ -96,6 +99,7 @@ def buildGraph(rows):
         #Set evcuation destinations
         if(node.end == (760,555) or node.end == (723,32) or node.end == (733,270)):
             node.setExit(True)
+            node.capacity = 10000 #arbitrary big number
 
         #Create return path if not exit node and is a 2 way street
         if(row[0] == 'Street' and not node.exit):
@@ -124,12 +128,16 @@ def simulate():
     rows = processInput('world.csv')
     (nodes, events) = buildGraph(rows)
     itr = 0
-    plt.show()
     showGraph(nodes)
+    plt.show(False)
     while len(events) > 0:
         (time, event) = heappop(events)
         simulationTime = time
         event.eventHandler(events, event, simulationTime)
+        if(itr % 5000 == 0):
+            showGraph(nodes)
+            plt.pause(0.01)
+        itr += 1
 
 
 def printDistribution():
