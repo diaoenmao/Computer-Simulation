@@ -8,7 +8,7 @@ from Objects import *
 from parameters import *
 from copy import deepcopy
 from heapq import heappush, heappop, heapify
-import time
+import time as t
 import sys
 sys.setrecursionlimit(10**6)
 
@@ -50,7 +50,8 @@ def findNode(nodes, node, i, j):
             findNode(nodes, node, i, n)
 
 #Graphing function to show the node connections
-def showGraph(nodes, time):
+def showGraph(nodes, time, x, y):
+    plt.figure(1)
     plt.clf()
     nodes = deepcopy(nodes)
     nodes = sorted(nodes, key=lambda node: node.id)
@@ -91,6 +92,9 @@ def showGraph(nodes, time):
     nx.draw_networkx_labels(G,pos,labels,font_size=16)
     plt.text(0,0,s='Time: ' + str(time))
     plt.draw()
+    plt.figure(2)
+    plt.clf()
+    plt.plot(x, y, linewidth=2.0)
 
 #Init function that builds the world using the parsed rows
 def buildGraph(rows):
@@ -153,17 +157,26 @@ def simulate():
     rows = processInput('world.csv')
     (nodes, events) = buildGraph(rows)
     itr = 0
-    showGraph(nodes, simulationTime)
+    exitedCount = [0]
+    exitTimes = [0]
+    showGraph(nodes, simulationTime, exitedCount, exitTimes)
     plt.show(False)
+    exited = 0
+    f = open("Output" + str(t.time()) + ".csv", "w")
     while len(events) > 0:
         (time, event) = heappop(events)
         simulationTime = time
         event.eventHandler(events, event, simulationTime)
+        if(event.type == Event.TYPE_EXIT):
+            exited += 1
+            exitedCount.append(exited)
+            exitTimes.append(simulationTime)
+            f.write(str(simulationTime) + "," + str(exited) + "\n")
         if(itr % 10000 == 0):
-            showGraph(nodes, simulationTime)
+            showGraph(nodes, simulationTime, exitedCount, exitTimes)
             plt.pause(0.001)
         itr += 1
-
+    f.close()
 
 def printDistribution():
     n = 2500

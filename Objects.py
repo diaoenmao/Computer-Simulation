@@ -200,13 +200,6 @@ def genericHandler(events, event, time, type):
     node = car.getCurrentNode()
     assert(node != None)
     carNdx = node.getCarPosition(car)
-
-    if(carNdx == -1):
-        print(node)
-        print(car)
-        print("****** CAR PATH ******")
-        print(car.getPath())
-        print(event.type)
     assert(carNdx != -1)
     
     #can't exit
@@ -314,8 +307,7 @@ def handleExit(events, event, time):
         if exitNode.exit:
             exitNode.enterCar(car)
             break
-    #print("Car " + str(car.id) + " exits.")
-
+    
 class Event:
     TYPE_IN_PARKING = 0
     TYPE_ON_STREET = 1
