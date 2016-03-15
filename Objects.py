@@ -177,6 +177,7 @@ def genericHandler(events, event, time, type):
     node = car.getCurrentNode()
     assert(node != None)
     carNdx = node.getCarPosition(car)
+
     if(carNdx == -1):
         print(node)
         print(car)
