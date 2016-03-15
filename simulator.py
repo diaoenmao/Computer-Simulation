@@ -50,7 +50,7 @@ def findNode(nodes, node, i, j):
             findNode(nodes, node, i, n)
 
 #Graphing function to show the node connections
-def showGraph(nodes):
+def showGraph(nodes, time):
     plt.clf()
     nodes = deepcopy(nodes)
     nodes = sorted(nodes, key=lambda node: node.id)
@@ -89,6 +89,7 @@ def showGraph(nodes):
     pos=nx.spring_layout(G, pos=pos, fixed=pos.keys())
     nx.draw(G,pos,node_color=colors)
     nx.draw_networkx_labels(G,pos,labels,font_size=16)
+    plt.text(0,0,s='Time: ' + str(time))
     plt.draw()
 
 #Init function that builds the world using the parsed rows
@@ -150,15 +151,15 @@ def simulate():
     rows = processInput('world.csv')
     (nodes, events) = buildGraph(rows)
     itr = 0
-    showGraph(nodes)
+    showGraph(nodes, simulationTime)
     plt.show(False)
     while len(events) > 0:
         (time, event) = heappop(events)
         simulationTime = time
         event.eventHandler(events, event, simulationTime)
-        if(itr % 5000 == 0):
-            showGraph(nodes)
-            plt.pause(0.01)
+        if(itr % 10000 == 0):
+            showGraph(nodes, simulationTime)
+            plt.pause(0.001)
         itr += 1
 
 
