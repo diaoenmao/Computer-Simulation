@@ -94,6 +94,8 @@ def showGraph(nodes, time, x, y):
     plt.draw()
     plt.figure(2)
     plt.clf()
+    plt.xlabel('Simulation time')
+    plt.ylabel('Exited car count')
     plt.plot(x, y, linewidth=2.0)
 
 #Init function that builds the world using the parsed rows
@@ -159,7 +161,7 @@ def simulate():
     itr = 0
     exitedCount = [0]
     exitTimes = [0]
-    showGraph(nodes, simulationTime, exitedCount, exitTimes)
+    showGraph(nodes, simulationTime, exitTimes, exitedCount)
     plt.show(False)
     exited = 0
     f = open("Output" + str(t.time()) + ".csv", "w")
@@ -173,7 +175,7 @@ def simulate():
             exitTimes.append(simulationTime)
             f.write(str(simulationTime) + "," + str(exited) + "\n")
         if(itr % 10000 == 0):
-            showGraph(nodes, simulationTime, exitedCount, exitTimes)
+            showGraph(nodes, simulationTime, exitTimes, exitedCount)
             plt.pause(0.001)
         itr += 1
     f.close()
