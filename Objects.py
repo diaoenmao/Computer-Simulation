@@ -156,6 +156,8 @@ class Car:
         return getDirection(self.__currentNode)
     def getCurrentNode(self):
         return self.__currentNode
+    def getPath(self):
+        return self.__path
     def __str__(self):
         string = "Car id: " + str(self.id) + " at location: " + str(self.__currentNode.start)
         if(len(self.__currentNode.getChildren())> 0):
@@ -175,6 +177,11 @@ def genericHandler(events, event, time, type):
     node = car.getCurrentNode()
     assert(node != None)
     carNdx = node.getCarPosition(car)
+    if(carNdx == -1):
+        print(node)
+        print(car)
+        print("****** CAR PATH ******")
+        print(car.getPath())
     assert(carNdx != -1)
     
     #can't exit
@@ -250,9 +257,8 @@ def handleIntersection(events, event, time):
         heappush(events, (newTime, newEvent))
     else:
         #print("Car " + str(car.id) + " is backed up.")
-        time += 1
-        heappush(events, (time, Event(car, Event.TYPE_ON_STREET)))
-    return
+        time = time + 1
+        heappush(events, (time, Event(car, Event.TYPE_AT_INTERSECTION)))
 
 def handleExit(events, event, time):
     car = event.car

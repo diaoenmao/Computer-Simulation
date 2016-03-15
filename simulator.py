@@ -49,12 +49,21 @@ def showGraph(nodes):
     G=nx.Graph()
     colors = []
     labels={}
+    labelDict = {}
     for node in nodes:
-        labels[node.id] = node.carCount()
+        if str(node.start) not in labelDict.keys():
+            labelDict[str(node.start)] = [node.id]
+            labels[node.id] = node.carCount()
+        else:
+            allSamePositionedNodes = labelDict[str(node.start)]
+            for nodeId in allSamePositionedNodes:
+                labels[nodeId] += node.carCount()
+        
         children = node.getChildren()
         if(node.exit):
             G.add_node(node.id, pos=node.end)
             colors.append(EXIT_NODE_COLOR)
+            labels[node.id] = node.carCount()
         else:
             G.add_node(node.id, pos=node.start)
             if(node.type == Node.TYPE_STREET):
