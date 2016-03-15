@@ -130,11 +130,7 @@ def simulate():
         (time, event) = heappop(events)
         simulationTime = time
         event.eventHandler(events, event, simulationTime)
-        if(itr % 50 == 0):
-            plt.clf()
-            showGraph(nodes)
-            plt.pause(0.001)
-        itr += 1
+
 
 def printDistribution():
     n = 2500

@@ -84,6 +84,8 @@ class Node:
         return len(self.__cars)
     def canEnterCar(self):
         return(self.carCount() < self.capacity)
+    def canEnterCarOnStreet(self):
+        return(self.carCount() < self.capacity and self.type == Node.TYPE_STREET)
     def setExit(self, isExit):
         self.exit = isExit
     def addChildNode(self, node):
@@ -98,7 +100,17 @@ class Node:
             ndx += 1
         return -1
     def getChildren(self):
-        return self.__children
+        childrenNode = self.__children
+        for child in childrenNode:
+            if(child.type == Node.TYPE_PARKING):
+                childrenNode.remove(child)
+        return childrenNode
+    def getChildByCop(self):
+        childrenNode = self.getChildren()
+        children_capacity = []
+        for child in childrenNode:
+            children_capacity.append(child.capacity)
+        return self.__children.index(min(children_capacity))
     def getDirection(self):
         return getDirection(self)
     
@@ -126,7 +138,7 @@ class Node:
                         nodeType = "\tStreet"
                     else:
                         nodeType = "\tParking"
-                    string += nodeType + " ID: " + str(child.id) + "\n"
+                    string += nodeType + " ID: " + str(child.id) + " capacity: " + str(child.capacity) +"\n"
         return string
 
 #Car object to keep track of the car's current location and its path.
@@ -145,7 +157,16 @@ class Car:
     def getCurrentNode(self):
         return self.__currentNode
     def __str__(self):
-        return "Car id: " + str(self.id) + " at location: " + str(self.__currentNode.start)
+        string = "Car id: " + str(self.id) + " at location: " + str(self.__currentNode.start)
+        if(len(self.__currentNode.getChildren())> 0):
+            string += "Children: \n"
+            for child in self.__currentNode.getChildren():
+                if(child.type == Node.TYPE_STREET):
+                    nodeType = "\tStreet"
+                else:
+                    nodeType = "\tParking"
+                string += nodeType + " ID: " + str(child.id) + " capacity: " + str(child.capacity) +"\n"
+        return string
 
 def genericHandler(events, event, time, type):
     #Check car's position in exit queue
@@ -156,6 +177,37 @@ def genericHandler(events, event, time, type):
     carNdx = node.getCarPosition(car)
     assert(carNdx != -1)
 
+    if(event.type == Event.TYPE_AT_INTERSECTION):
+        childrenNode = node.getChildren()
+        if(COP_MODE):
+            childNode = childrenNode[node.getChildByCop]            
+        else:
+            if(len(childrenNode) > 1):
+                rand = int(genRandom(len(childrenNode), type = 'uniform'))
+                while(rand == len(childrenNode)):
+                    rand = int(genRandom(len(childrenNode), type = 'uniform'))
+            else:
+                rand = 0
+            childNode = childrenNode[rand]
+            
+        if(childNode.exit):
+            newTime = time + 1
+            newEvent = Event(car, Event.TYPE_EXIT)
+            heappush(events, (newTime, newEvent))
+            return
+        #insert "on street" event   
+        if(childNode.canEnterCarOnStreet()):        
+            childNode.enterCar(car)
+            newTime = time + genRandom(node.minTravelTime)
+            newEvent = Event(car, Event.TYPE_ON_STREET)
+            heappush(events, (newTime, newEvent))
+        else:
+            print("Car " + str(car.id) + " is backed up.")
+            time = time + node.minTravelTime
+            heappush(events, (time, Event(car, type)))
+        print(car)
+        return
+    
     #can't exit
     if(carNdx > 0):
         time = time + 1
@@ -181,7 +233,7 @@ def genericHandler(events, event, time, type):
             return
 
         #insert "on street" event   
-        if(childNode.canEnterCar()):        
+        if(childNode.canEnterCarOnStreet()):        
             childNode.enterCar(car)
             newTime = time + genRandom(node.minTravelTime)
             newEvent = Event(car, Event.TYPE_ON_STREET)
@@ -198,13 +250,7 @@ def handleOnStreet(events, event, time):
     genericHandler(events, event, time, Event.TYPE_ON_STREET)
 
 def handleIntersection(events, event, time):
-    car = event.car
-    assert(car != None)
-    node = car.getCurrentNode()
-    assert(node != None)
-    exitedCar = node.exitCar()
-    assert(exitedCar.id == car.id)
-    print(car)
+    genericHandler(events, event, time, Event.TYPE_AT_INTERSECTION)
 
 def handleExit(events, event, time):
     car = event.car
