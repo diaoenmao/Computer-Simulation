@@ -207,6 +207,4 @@ def printDistribution():
     plt.hist (g)
     plt.show()
 
-from threading import Thread
-for i in range(2):
-    Thread( target=simulate ).start()
+simulate()
