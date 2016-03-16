@@ -69,6 +69,7 @@ class Node:
         self.minTravelTime = minTravelTime
         self.id = id
         self.exit = exit
+        self.cop = 0
         self.maxMinTravelTimeforAll = 0
         self.__cars = []
         self.__children = []
@@ -89,6 +90,8 @@ class Node:
         return(self.carCount() < self.capacity and self.type == Node.TYPE_STREET)
     def setExit(self, isExit):
         self.exit = isExit
+    def setCop(self, ifCop):
+        self.cop = ifCop
     def setmaxMinTravelTimeforAll(self, maxTravel):
         self.maxMinTravelTimeforAll = maxTravel
     def addChildNode(self, node):
@@ -117,14 +120,21 @@ class Node:
         return exitChild_ndx
     def getChildByCop(self):
         childrenNode = self.getChildren()
-        children_available = []
-        children_traveltime = []
-        children_decision = []
-        for child in childrenNode:
-            children_available.append(child.carCount()/child.capacity)
-            children_traveltime.append(child.minTravelTime/child.maxMinTravelTimeforAll)
-            children_decision.append(SPACE_TIME_TRADEOFF*child.carCount()/child.capacity + (1-SPACE_TIME_TRADEOFF)*child.minTravelTime/child.maxMinTravelTimeforAll)
-        return children_decision.index(min(children_decision))
+        congestion = self.carCount()/self.capacity
+        intersection = len(childrenNode)
+        ifCop = ((congestion >= COP_CONGESTION_THRESHOLD) or (self.start in DEAD_END)) and (intersection >= COP_INTERSECTION_THRESHOLD)
+        self.setCop(ifCop)
+        if(ifCop):
+            children_available = []
+            children_traveltime = []
+            children_decision = []
+            for child in childrenNode:
+                children_available.append(child.carCount()/child.capacity)
+                children_traveltime.append(child.minTravelTime/child.maxMinTravelTimeforAll)
+                children_decision.append(SPACE_TIME_TRADEOFF*child.carCount()/child.capacity + (1-SPACE_TIME_TRADEOFF)*child.minTravelTime/child.maxMinTravelTimeforAll)
+            return children_decision.index(min(children_decision))
+        else:
+            return -1
     def getDirection(self):
         return getDirection(self)
     def isTowardEast(self):
@@ -135,7 +145,7 @@ class Node:
         children_east_ndx = []
         for child in childrenNode:
             if(child.isTowardEast()):
-                children_east.append(childrenNode.index(child))
+                children_east_ndx.append(childrenNode.index(child))
         return children_east_ndx
     #To string to be used by print()
     def __repr__(self):
@@ -146,15 +156,9 @@ class Node:
         string = nodeType + " ID: " + str(self.id)
         if(self.exit):
             string += " is an exit. "
-        if(DEBUG):        
             string += " From " + str(self.start) + " To " + str(self.end) \
                 + " Capacity: " + str(self.capacity) + " Current: " + str(self.carCount()) + "\n"
-            
-            i = 1
-            for car in self.__cars:
-                string += "\t" + str(i) + ": " + str(car) + "\n"
-                i += 1
-            if(len(self.__children) > 0):
+            if(DEBUG and len(self.__children) > 0):
                 string += "Children: \n"
                 for child in self.__children:
                     if(child.type == Node.TYPE_STREET):
@@ -215,8 +219,7 @@ def genericHandler(events, event, time, type):
     else:
         #can exit.
         assert(len(node.getChildren()) == 1)
-        exitedCar = node.exitCar()
-        assert(exitedCar.id == car.id)
+        
 
         childNode = node.getChildren()[0]
         #insert exit event
@@ -226,6 +229,8 @@ def genericHandler(events, event, time, type):
             heappush(events, (newTime, newEvent))
             return
 
+        exitedCar = node.exitCar()
+        assert(exitedCar.id == car.id)
         #insert "on street" event   
         if(childNode.canEnterCarOnStreet()):        
             childNode.enterCar(car)
@@ -248,33 +253,28 @@ def handleIntersection(events, event, time):
     assert(car != None)
     node = car.getCurrentNode()
     assert(node != None)
-
+        
     childrenNode = node.getChildren()
-    if(COP_MODE):
-        childNode = -1
-        if(node.getExitChild()):
-            childNode = childrenNode[node.getExitChild()[0]]
+    childNode = -1
+    if(node.getExitChild()):
+        childNode = childrenNode[node.getExitChild()[0]]
+    if(childNode==-1 and COP_MODE): 
+        childNode = childrenNode[node.getChildByCop()]            
+    if(childNode == -1 and EAST_TENDENCY!=0):
+        to_east_node_ndx = node.childrenTowardEast()            
+        if(to_east_node_ndx):
+            east_node = [childrenNode[i] for i in to_east_node_ndx]
+            prob = [genRandom(1,type='uniform') for x in to_east_node_ndx]
+            tendency = [x - (1 - EAST_TENDENCY) for x in prob]
+            if(max(tendency)>0):
+                max_node_ndx = tendency.index(max(tendency))
+                childNode = childrenNode[to_east_node_ndx[max_node_ndx]]
+    if(childNode==-1):
+        if(len(childrenNode) > 1):
+            rand = math.floor(genRandom(len(childrenNode), type = 'uniform'))
         else:
-            childNode = childrenNode[node.getChildByCop()]            
-    else:
-        childNode = -1
-        if(node.getExitChild()):
-            chiledNode = childrenNode[node.getExitChild()[0]] 
-        if(EAST_TENDENCY!=0):
-            to_east_node_ndx = node.childrenTowardEast()            
-            if(to_east_node_ndx):
-                east_node = [childrenNode[i] for i in to_east_node_ndx]
-                prob = [genRandom(1,type='uniform') for x in to_east_node_ndx]
-                tendency = [x - (1 - EAST_TENDENCY) for x in prob]
-                if(max(tendency)>0):
-                    max_node_ndx = tendency.index(max(tendency))
-                    childNode = childrenNode[to_east_node_ndx[max_node_ndx]]
-        if(childNode==-1):
-            if(len(childrenNode) > 1):
-                rand = math.floor(genRandom(len(childrenNode), type = 'uniform'))
-            else:
-                rand = 0
-            childNode = childrenNode[rand]
+            rand = 0
+        childNode = childrenNode[rand]
 
     if(childNode.exit):
         newTime = time + 1

@@ -77,7 +77,10 @@ def showGraph(nodes, time, x, y):
                 labels[samePositionedNode] += node.carCount()
             G.add_node(node.id, pos=node.start)
             if(node.type == Node.TYPE_STREET):
-                colors.append(STREET_NODE_COLOR)
+                if(node.cop):
+                    colors.append(COP_NODE_COLOR)
+                else:
+                    colors.append(STREET_NODE_COLOR) 
             else:
                 colors.append(PARKING_NODE_COLOR)
 
