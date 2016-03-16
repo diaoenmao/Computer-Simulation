@@ -178,6 +178,11 @@ def simulate():
             exitTimes.append(simulationTime)
             f.write(str(simulationTime) + "," + str(exited) + "\n")
         if(itr % 10000 == 0):
+            if(exited > COP_EVACUATION_THRESHOLD):
+                for node in nodes:
+                    if (node.carCount()==0):
+                        node.setCop(0)
+                        node.setCopLeft(1)
             showGraph(nodes, simulationTime, exitTimes, exitedCount)
             plt.pause(0.001)
         itr += 1
