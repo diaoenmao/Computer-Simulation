@@ -40,7 +40,7 @@ def findNode(nodes, node, i, j):
             while(n >= 0 and nodes[n].start == end):
                 node.addChildNode(nodes[n])
                 n -= 1
-            n = int(math.ceil((j-i)/2.0)) + i
+            n = int(math.ceil((j-i)/2.0)) + i + 1
             while(n < len(nodes) and nodes[n].start == end):
                 node.addChildNode(nodes[n])
                 n += 1
