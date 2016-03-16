@@ -238,7 +238,6 @@ def genericHandler(events, event, time, type):
         #insert "on street" event   
         if(childNode.canEnterCarOnStreet()):
             exitedCar = node.exitCar()
-            assert(exitedCar.id == car.id)       
             assert(exitedCar.id == car.id)
             childNode.enterCar(car)
             newTime = time + genRandom(node.minTravelTime)

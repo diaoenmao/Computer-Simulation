@@ -164,10 +164,13 @@ def simulate():
     itr = 0
     exitedCount = [0]
     exitTimes = [0]
-    showGraph(nodes, simulationTime, exitTimes, exitedCount)
-    plt.show(False)
+    if VISUAL:
+        showGraph(nodes, simulationTime, exitTimes, exitedCount)
+        plt.show(False)
     exited = 0
-    f = open("Output" + str(t.time()) + ".csv", "w")
+    f = open("./data/Output" + str(t.time()) + " Cop " + str(COP_MODE) + " Cop intersection threshold " \
+        + str(COP_INTERSECTION_THRESHOLD) + " Cop evacuation threshold " \
+        + str(COP_EVACUATION_THRESHOLD) + " East tendency " + str(EAST_TENDENCY) + ".csv", "w")
     while len(events) > 0:
         (time, event) = heappop(events)
         simulationTime = time
@@ -177,12 +180,11 @@ def simulate():
             exitedCount.append(exited)
             exitTimes.append(simulationTime)
             f.write(str(simulationTime) + "," + str(exited) + "\n")
-        if(itr % 10000 == 0):
+        if(VISUAL and itr % 10000 == 0):
             if(exited > COP_EVACUATION_THRESHOLD):
                 for node in nodes:
-                    if (node.carCount()==0):
-                        node.setCop(0)
-                        node.setCopLeft(1)
+                    node.setCop(0)
+                    node.setCopLeft(1)
             showGraph(nodes, simulationTime, exitTimes, exitedCount)
             plt.pause(0.001)
         itr += 1
@@ -205,4 +207,6 @@ def printDistribution():
     plt.hist (g)
     plt.show()
 
-simulate()
+from threading import Thread
+for i in range(8):
+    Thread( target=simulate ).start()
