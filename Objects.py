@@ -164,16 +164,6 @@ class Node:
             string += " is an exit. "
             string += " From " + str(self.start) + " To " + str(self.end) \
                 + " Capacity: " + str(self.capacity) + " Current: " + str(self.carCount()) + "\n"
-<<<<<<< Updated upstream
-        if(DEBUG and len(self.__children) > 0):
-            string += " Children: \n"
-            for child in self.__children:
-                if(child.type == Node.TYPE_STREET):
-                    nodeType = "\tStreet"
-                else:
-                    nodeType = "\tParking"
-                string += nodeType + " ID: " + str(child.id) + " capacity: " + str(child.capacity) +"\n"
-=======
             if(DEBUG and len(self.__children) > 0):
                 string += "Children: \n"
                 for child in self.__children:
@@ -182,7 +172,6 @@ class Node:
                     else:
                         nodeType = "\tParking"
                     string += nodeType + " ID: " + str(child.id) + " capacity: " + str(child.capacity) +"\n"
->>>>>>> Stashed changes
         return string
 
 #Car object to keep track of the car's current location and its path.
@@ -237,10 +226,7 @@ def genericHandler(events, event, time, type):
         #can exit.
         assert(len(node.getChildren()) == 1)
         
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
         childNode = node.getChildren()[0]
         #insert exit event
         if(childNode.exit):
@@ -253,11 +239,7 @@ def genericHandler(events, event, time, type):
         #insert "on street" event   
         if(childNode.canEnterCarOnStreet()):
             exitedCar = node.exitCar()
-<<<<<<< Updated upstream
-            assert(exitedCar.id == car.id)       
-=======
             assert(exitedCar.id == car.id)
->>>>>>> Stashed changes
             childNode.enterCar(car)
             newTime = time + genRandom(node.minTravelTime)
             newEvent = Event(car, Event.TYPE_ON_STREET)
@@ -283,18 +265,12 @@ def handleIntersection(events, event, time):
     childNode = -1
     if(node.getExitChild()):
         childNode = childrenNode[node.getExitChild()[0]]
-<<<<<<< Updated upstream
-    if(childNode==-1 and COP_MODE): 
-        childNode = childrenNode[node.getChildByCop()]
-        print(childNode)            
-=======
     if(childNode==-1 and COP_MODE):
         childByCop_ndx = node.getChildByCop()
         if(childByCop_ndx != -1):
             childNode = childrenNode[childByCop_ndx] 
         else:
             childNode = -1
->>>>>>> Stashed changes
     if(childNode == -1 and EAST_TENDENCY!=0):
         to_east_node_ndx = node.childrenTowardEast()            
         if(to_east_node_ndx):
