@@ -180,11 +180,11 @@ def simulate():
             exitedCount.append(exited)
             exitTimes.append(simulationTime)
             f.write(str(simulationTime) + "," + str(exited) + "\n")
+        if(exited > COP_EVACUATION_THRESHOLD):
+            for node in nodes:
+                node.setCop(0)
+                node.setCopLeft(1)
         if(VISUAL and itr % 10000 == 0):
-            if(exited > COP_EVACUATION_THRESHOLD):
-                for node in nodes:
-                    node.setCop(0)
-                    node.setCopLeft(1)
             showGraph(nodes, simulationTime, exitTimes, exitedCount)
             plt.pause(0.001)
         itr += 1
@@ -208,5 +208,5 @@ def printDistribution():
     plt.show()
 
 from threading import Thread
-for i in range(8):
+for i in range(2):
     Thread( target=simulate ).start()
