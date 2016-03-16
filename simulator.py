@@ -60,6 +60,7 @@ def showGraph(nodes, time, x, y):
     labels={}
     labelDict = {}
     exits = 1
+    cops = 0
     for node in nodes:
         if(node.exit):
             G.add_node(len(nodes) + exits, pos=node.start)
@@ -78,6 +79,8 @@ def showGraph(nodes, time, x, y):
             G.add_node(node.id, pos=node.start)
             if(node.type == Node.TYPE_STREET):
                 colors.append(STREET_NODE_COLOR)
+                if(node.cop):
+                    colors[-1] = COP_NODE_COLOR
             else:
                 colors.append(PARKING_NODE_COLOR)
 
