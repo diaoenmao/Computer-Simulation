@@ -92,8 +92,6 @@ class Node:
         self.exit = isExit
     def setCop(self, ifCop):
         self.cop = ifCop
-    def isIntersection(self):
-        return len(self.getChildren()) > 2
     def setmaxMinTravelTimeforAll(self, maxTravel):
         self.maxMinTravelTimeforAll = maxTravel
     def addChildNode(self, node):
@@ -124,10 +122,10 @@ class Node:
         childrenNode = self.getChildren()
         congestion = self.carCount()/self.capacity
         intersection = len(childrenNode)
-        ifCop = ((congestion >= COP_CONGESTION_THRESHOLD) or (intersection >= COP_INTERSECTION_THRESHOLD) or \
-                (self.start in DEAD_END)) and (self.isIntersection())
+        ifCop = ((congestion >= COP_CONGESTION_THRESHOLD) or (self.start in DEAD_END)) and (intersection >= COP_INTERSECTION_THRESHOLD)
         self.setCop(ifCop)
         if(ifCop):
+            print(self)
             children_available = []
             children_traveltime = []
             children_decision = []
@@ -221,13 +219,13 @@ def genericHandler(events, event, time, type):
         heappush(events, (time, Event(car, type)))
         return
     
-    if(node.isIntersection()):
+    if(len(node.getChildren()) > 1):
         #insert new "at intersection" event
         newEvent = Event(car, Event.TYPE_AT_INTERSECTION) 
         heappush(events, (time + 1, newEvent))
     else:
         #can exit.
-        
+        assert(len(node.getChildren()) == 1)
         exitedCar = node.exitCar()
         assert(exitedCar.id == car.id)
 
@@ -261,13 +259,15 @@ def handleIntersection(events, event, time):
     assert(car != None)
     node = car.getCurrentNode()
     assert(node != None)
-
+        
     childrenNode = node.getChildren()
     childNode = -1
     if(node.getExitChild()):
         childNode = childrenNode[node.getExitChild()[0]]
-    if(childNode == -1 and COP_MODE):
-            childNode = childrenNode[node.getChildByCop()]                        
+    if(childNode==-1 and COP_MODE): 
+            childNode = childrenNode[node.getChildByCop()]            
+    if(childNode == -1 and EAST_TENDENCY!=0):
+        chiledNode = childrenNode[node.getExitChild()[0]] 
     if(childNode == -1 and EAST_TENDENCY!=0):
         to_east_node_ndx = node.childrenTowardEast()            
         if(to_east_node_ndx):

@@ -60,7 +60,6 @@ def showGraph(nodes, time, x, y):
     labels={}
     labelDict = {}
     exits = 1
-    cops = 0
     for node in nodes:
         if(node.exit):
             G.add_node(len(nodes) + exits, pos=node.start)
