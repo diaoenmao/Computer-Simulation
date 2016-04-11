@@ -41,4 +41,11 @@ def buildGraph(rows):
     
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.id)
+	for a_node in nodes:
+		for i in a_node._from:
+			if(i>0):
+				a_node.addEdge(nodes[i-1])
+		for j in a_node._to:
+			if(j>0):
+				a_node.addEdge(nodes[j-1])
     return nodes

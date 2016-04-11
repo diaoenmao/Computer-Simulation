@@ -13,10 +13,13 @@ class Node:
         self.start = (x1,y1)
         self.end = (x2,y2)
         self.tail = isTail
-
+		self.edge =[]
     def setTail(self, isTail):
         self.tail = isTail
-        
+    
+	def addEdge(self, edge):
+		self.edge.append(edge)
+	
     def __repr__(self):
         return "Node: " + name + ", " + id + ", " + length + ", " + radius + ", " + wall_thickness + ", " + youngs_modulus + "\n" \
         + ", " + f0 + ", " + _from +  ", " + _to +  ", " + start +  ", " + end +  ", " + tail + "\n"
