@@ -4,8 +4,10 @@ import re
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import Point
-def draw_body():
+from Point import *
+
+def draw_body(nodes):
+    assert(nodes is not None)
     global body_model
     if 'body_model' not in globals() or body_model is None:
         body_model = {'x': [], 'y': [], 'z': [], 'triangles': []}
@@ -30,6 +32,8 @@ def draw_body():
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot_trisurf(body_model['x'], body_model['y'], triangles=body_model['triangles'], shade=False,alpha=0.2, Z=body_model['z'])
+
+    #Blood vessels
 
     ax.set_xlabel('x-axis')
     ax.set_ylabel('y-axis')

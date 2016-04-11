@@ -1,9 +1,13 @@
 import csv
+import os
+from Node import *
+from Point import *
 
 #Process the input file and return the rows of split data.
 def processInput(inputFile):
+    current_directory = os.path.dirname(os.path.realpath(__file__))
     rows = []
-    with open(inputFile) as f:
+    with open(current_directory + inputFile) as f:
         c = csv.reader(f, delimiter=',')
         for row in c:
             rows.append(row)
@@ -23,29 +27,30 @@ def buildGraph(rows):
         youngs_modulus = row[5]
         f0 = row[6]
         if(type(row[7]) is str):
-            _from = row[7].split(',')
+            _from = [ int(numeric_string) for numeric_string in row[7].split(',') ]
         else:
-            _from = row[7]
+            _from = [ int(numeric_string) for numeric_string in row[7] ]
+
         if(type(row[8]) is str):
-            _to = row[8].split(',')
+            _to = [ int(numeric_string) for numeric_string in row[8].split(',') ]
         else:
-            _to = row[8]
-        (x1,y1) = (0,0)
-        (x2,y2) = (0,0)
-        node = Node(name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, (x1,y1), (x2,y2))
+            _to = [ int(numeric_string) for numeric_string in row[8].split(',') ]
+        p1 = Point(0,0,0)
+        p2 = Point(0,0,0)
+        node = Node(name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, p1, p2)
         nodes.append(node)
 
         #Set end
-        if(node._to = 0):
+        if(node._to == 0):
             node.setTail(True)
     
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.id)
-	for a_node in nodes:
-		for i in a_node._from:
-			if(i>0):
-				a_node.addEdge(nodes[i-1])
-		for j in a_node._to:
-			if(j>0):
-				a_node.addEdge(nodes[j-1])
+    for a_node in nodes:
+        for i in a_node._from:
+            if(i>0):
+                a_node.addEdge(nodes[i-1])
+        for j in a_node._to:
+            if(j>0):
+                a_node.addEdge(nodes[j-1])
     return nodes
