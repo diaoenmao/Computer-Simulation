@@ -30,8 +30,9 @@ def buildGraph(rows):
             _to = row[8].split(',')
         else:
             _to = row[8]
-        
-        node = Node(namemo)
+        (x1,y1) = (0,0)
+		(x2,y2) = (0,0)
+        node = Node(name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, (x1,y1), (x2,y2))
         nodes.append(node)
 
         #Set end
