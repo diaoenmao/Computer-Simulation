@@ -13,12 +13,12 @@ class Node:
         self.start = p1
         self.end = p2
         self.tail = isTail
-        self.edge =[]
+        self.edges =[]
     def setTail(self, isTail):
         self.tail = isTail
     
     def addEdge(self, edge):
-        self.edge.append(edge)
+        self.edges.append(edge)
     
     def __repr__(self):
         return "Node: " + self.name + "\n" \

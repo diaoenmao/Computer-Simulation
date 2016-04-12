@@ -21,10 +21,10 @@ def buildGraph(rows):
         assert(len(row) == 9)
         name = row[0]
         id = row[1]
-        length = row[2]
-        radius = row[3]
-        wall_thickness = row[4]
-        youngs_modulus = row[5]
+        length = float(row[2])
+        radius = float(row[3])
+        wall_thickness = float(row[4])
+        youngs_modulus = float(row[5])
         f0 = row[6]
         if(type(row[7]) is str):
             _from = [ int(numeric_string) for numeric_string in row[7].split(',') ]
@@ -47,9 +47,6 @@ def buildGraph(rows):
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.id)
     for a_node in nodes:
-        for i in a_node._from:
-            if(i>0):
-                a_node.addEdge(nodes[i-1])
         for j in a_node._to:
             if(j>0):
                 a_node.addEdge(nodes[j-1])

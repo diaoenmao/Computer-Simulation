@@ -34,6 +34,9 @@ def draw_body(nodes):
     ax.plot_trisurf(body_model['x'], body_model['y'], triangles=body_model['triangles'], shade=False,alpha=0.2, Z=body_model['z'])
 
     #Blood vessels
+    for node in nodes:
+        print(node.radius)
+        draw_blood_vessel(ax, node.start, node.end, node.radius / 100 * parameters.visualization_factor)
 
     ax.set_xlabel('x-axis')
     ax.set_ylabel('y-axis')
@@ -41,7 +44,8 @@ def draw_body(nodes):
 
     plt.show()
 
-def draw_blood_vessel(p1, p2, r, color='g'):
+def draw_blood_vessel(ax, p1, p2, r, color='g'):
+    assert(ax is not None)
     assert(isinstance(p1, Point))
     assert(isinstance(p2, Point))
     if(p2.y - p1.y) < 0:

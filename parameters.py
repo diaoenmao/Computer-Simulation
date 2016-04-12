@@ -7,6 +7,9 @@ parameters = Parameter()
 parameters.body_mesh_file = '/data/body_mesh.obj'
 parameters.blood_vessel_file = '/data/data.csv'
 
+#Visualization parameters
+parameters.visualization_factor = 12
+
 #Simulation parameters
 parameters.blood_density = 1.05 #g/cm^3
 parameters.viscosity = 0.04 #poise
