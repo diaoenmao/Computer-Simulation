@@ -18,7 +18,9 @@ class Node:
         self.tail = isTail
         self.yaw = yaw
         self.pitch = pitch
-        self.edges =[]
+        self.cells = []
+        self.bacteria = []
+        
     def setTail(self, isTail):
         self.tail = isTail
     
@@ -30,6 +32,10 @@ class Node:
     def setEnd(self, end):
         assert(isinstance(end, Point))
         self.end = end
+    def cellCount(self):
+        return length(cells)
+    def bacteriaCount(self):
+        return length(bacteria)
     def __repr__(self):
         return "Node: " + self.name + "\n" \
             + "    id: " + str(self.id) + " length: " + "{:.2f}".format(self.length) + " \n" \
