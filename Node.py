@@ -14,12 +14,21 @@ class Node:
         self.end = p2
         self.tail = isTail
         self.edge =[]
+        self.cells = []
+        self.bacteria = []
+        
     def setTail(self, isTail):
         self.tail = isTail
     
     def addEdge(self, edge):
         self.edge.append(edge)
-    
+        
+    def cellCount(self):
+        return length(cells)
+
+    def bacteriaCount(self):
+        return length(bacteria)
+        
     def __repr__(self):
         return "Node: " + self.name + "\n" \
             + "    id: " + str(self.id) + " length: " + str(self.length) + " \n" \
