@@ -1,10 +1,11 @@
 from parameters import parameters
 import os
 import re
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#import matplotlib.pyplot as plt
+#from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from Point import *
+from mayavi import mlab
 
 def draw_body(nodes):
     assert(nodes is not None)
@@ -29,23 +30,15 @@ def draw_body(nodes):
                     parts = re.split('\s', line)
                     triangle = [ float(re.sub('\/\/.*', '', parts[0]))-1, float(re.sub('\/\/.*', '', parts[1]))-1, float(re.sub('\/\/.*', '', parts[2]))-1 ]
                     body_model['triangles'].append(triangle)
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot_trisurf(body_model['x'], body_model['y'], triangles=body_model['triangles'], shade=False,alpha=0.2, Z=body_model['z'])
-
+    
+    mlab.triangular_mesh(body_model['x'], body_model['y'], body_model['z'], body_model['triangles'], color=(1,0.8,0.8), opacity=0.2)
     #Blood vessels
     for node in nodes:
-        print(node.radius)
-        draw_blood_vessel(ax, node.start, node.end, node.radius / 100 * parameters.visualization_factor)
+        draw_blood_vessel(node.start, node.end, node.radius / 100 * parameters.visualization_factor)
 
-    ax.set_xlabel('x-axis')
-    ax.set_ylabel('y-axis')
-    ax.set_zlabel('z-axis')
+    mlab.show()
 
-    plt.show()
-
-def draw_blood_vessel(ax, p1, p2, r, color='g'):
-    assert(ax is not None)
+def draw_blood_vessel(p1, p2, r, color=(1,0,0)):
     assert(isinstance(p1, Point))
     assert(isinstance(p2, Point))
     if(p2.y - p1.y) < 0:
@@ -55,21 +48,28 @@ def draw_blood_vessel(ax, p1, p2, r, color='g'):
     u = np.linspace(0, 2 * np.pi, 100)
     l = p2.y - p1.y
     x = r * np.outer(np.cos(u), np.sin(u))
-    y = p1.y * np.outer(1,1)
+    y = np.empty((len(x),len(x)))
+    y.fill(p1.y)
     z = r * np.outer(np.sin(u), np.sin(u))
     #p1
-    ax.plot_surface(p1.x + x, y, z, color='g')
+    mlab.mesh(p1.x + x, y, p1.z + z, color=color)
     #p2
-    ax.plot_surface(p2.x + x, l+y, z, color='g')
+    mlab.mesh(p2.x + x, l+y, p2.z + z, color=color)
     
     #sides
     x = r * np.linspace(-1, 1, 40)
-    z = np.sqrt(r**2-x**2)
     y = np.linspace(p1.y, p2.y, 40)
 
     x, y = np.meshgrid(x, y)
+    z = np.sqrt(r**2-x**2)
+    neg_z = -z
     diff = np.linspace(p1.x, p2.x, 40)
+    diffz = np.linspace(p1.z, p2.z, 40)
     for (row, dx ) in zip(x, diff):
         row += dx
-    ax.plot_surface(x,y,-z, color=color)
-    ax.plot_surface(x,y,z, color=color)
+    for (row, dz ) in zip(z, diffz):
+        row += dz
+    for (row, dz ) in zip(neg_z, diffz):
+        row += dz 
+    mlab.mesh(x,y,neg_z, color=color)
+    mlab.mesh(x,y,z, color=color)
