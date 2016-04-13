@@ -1,0 +1,76 @@
+Ascendingaorta 1 4.0 1.45 0.163 4 34.7
+Aortic arch 2 2.0 1.12 0.132 4 16.7
+Aortic arch 5 3.9 1.07 0.127 4 36.6
+Thoracic aorta 11 5.2 1.00 0.120 4 27.6
+Thoracic aorta 21 5.2 0.95 0.116 4 27.8
+Thoracic aorta 34 5.2 0.95 0.116 4 27.8
+Abdominal aorta 50 5.3 0.87 0.108 4 27.5
+Abdominal aorta 65 5.3 0.57 0.080 4 29.3
+Abdominal aorta 75 5.3 0.57 0.080 4 29.3
+Coeliac artery 49 1.0 0.39 0.064 4 167.8
+Gastric artery 61 7.1 0.18 0.045 4 29.2
+Splenic artery 62 6.3 0.28 0.054 4 28.9
+Hepatic artery 63 6.6 0.22 0.049 4 29.6
+Renal artery 64 3.2 0.26 0.053 4 58.4
+Superior mesenteric 66 5.9 0.43 0.069 4 28.1
+Gastric artery 67 3.2 0.26 0.053 4 58.4
+Inferior mesenteric 83 5.0 0.16 0.043 4 42.9
+Common carotid (L) 4 8.9 0.37 0.063 4 19.2
+Common carotid (L) 10 8.9 0.37 0.063 4 19.2
+Common carotid (L) 20 3.1 0.37 0.63 4 55.1
+Common carotid (R) 12 8.9 0.37 0.063 4 19.2
+Common carotid (R) 22 8.9 0.37 0.063 4 19.2
+Left subclavian artery 3 3.4 0.42 0.067 4 48.6
+Brachiocephalic artery 6 3.4 0.62 0.086 4 45.4
+Common iliac 82 84 5.8 0.52 0.076 4 27.3
+External iliac 89 92 8.3 0.29 0.055 4 21.3
+Internal iliac 90 91 5.0 0.20 0.040 16 74.1
+External iliac 98 99 6.1 0.27 0.053 4 30.1
+Femoral artery 104 107 12.7 0.24 0.050 8 21.1
+Profundis artery 105 106 12.6 0.23 0.049 16 30.3
+Femoral artery 109 110 12.7 0.24 0.050 8 21.1
+Popliteal artery 111 112 9.4 0.20 0.047 8 30.2
+Poplitea| artery 113 114 9.4 0.20 0.050 4 22.0
+Anterior tibial artery 115 118 2.5 0.13 0.039 16 181.5
+Anterior tibial artery 119 124 15.0 0.10 0.020 16 24.7
+Anterior tibial artery 125 128 15.0 0.10 0.020 16 24.7
+Posterior tibial artery 116 117 16.1 0.18 0.045 16 25.7
+Posterior tibial artery 121 122 16.1 0.18 0.045 16 25.7
+Peroneal artery 120 123 15.9 0.13 0.039 16 28.5
+Peroneal artery 126 127 15.9 0.13 0.019 16 28.5
+Carotid (internal) 31 37 5.9 0.18 0.045 8 49.6
+External carotid 32 36 11.8 0.15 0.042 8 26.3
+Superior thyroid artery 33 35 4.0 0.07 0.020 8 78.3
+Lingual artery 43 56 3.0 0.10 0.030 8 106.9
+Internal carotid 44 55 5.9 0.13 0.039 8 54.4
+Facial artery 45 54 4.0 0.10 0.030 16 113.4
+Middle cerebral 46 53 3.0 0.06 0.020 16 159.4
+Cerebral artery 47 52 5.9 0.08 0.026 16 80.0
+Opthalmic artery 48 51 3.0 0.07 0.020 16 147.6
+Internal carotid 60 68 5.9 0.08 0.026 16 80.0
+Superficial temporal 73 77 4.0 0.06 0.020 16 119.6
+Maxilliary artery 74 76 5.0 0.07 0.020 16 88.6
+Internal mammary 7 15 15.0 0.10 0.030 8 21.4
+Subclavian artery 8 14 6.8 0.40 0.066 4 24.7
+Vertebral artery 9 13 14.8 0.19 0.045 8 19.2
+Costo-cervical artery 16 26 5.0 0.10 0.030 8 64.2
+Axilliary artery 17 25 6.1 0.36 0.062 4 28.2
+Suprascapular 18 24 10.0 0.20 0.052 8 29.9
+Thyrocervical 19 23 5.0 0.10 0.030 8 64.2
+Thoraco-acromial 27 41 3.0 0.15 0.035 16 133.4
+Axillary artery 28 40 5.6 0.31 0.057 4 31.7
+Circumflex scapular 29 39 5.0 0.10 0.030 16 90.7
+Subscapular 30 38 8.0 0.15 0.035 16 50.0
+Brachial artery 42 57 63 0.28 0.055 4 29.1
+Profunda brachi 58 70 15.0 0.15 0.035 8 18.9
+Brachial artery 59 69 6.3 0.26 0.053 4 29.7
+Brachial artery 71 79 6.3 0.25 0.052 4 29.9
+Superior ulnar collateral 72 78 5.0 0.07 0.020 16 88.6
+Inferior ulnar collateral 80 86 5.0 0.06 0.020 16 95.6
+Brachial artery 81 85 4.6 0.24 0.050 4 41.1
+Ulnar artery 87 94 6.7 0.21 0.049 8 42.2
+Radial artery 88 93 11.7 0.16 0.043 8 25.9
+Ulnar artery 95 102 8.5 0.19 0.462 8 33.9
+Interossea artery 96 101 7.9 0.09 0.028 16 58.5
+Radial artery 97 100 11.7 0.16 0.043 8 25.9
+Ulnar artery 103 108 8.5 0.19 0.046 8 33.9
