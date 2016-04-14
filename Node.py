@@ -20,7 +20,7 @@ class Node:
         self.pitch = pitch
         self.cells = []
         self.bacteria = []
-        
+        self.edges = []
     def setTail(self, isTail):
         self.tail = isTail
     
