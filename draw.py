@@ -8,17 +8,25 @@ from Point import *
 from mayavi import mlab
 
 def picker_callback(picker):
-    global vessels, lastSelected
+    global vessels, lastSelected, bound
     if 'lastSelected' not in globals():
         lastSelected = None
-    
+    if 'bound' not in globals():
+        bound = None
     picked = picker.actors
     for (top, bottom, node) in vessels:
-        #if picker.actor in top.actor.actors or picker.actor in bottom.actor.actors:
-            if top.actor.actor._vtk_obj in [o._vtk_obj for o in picked] or bottom.actor.actor._vtk_obj in [o._vtk_obj for o in picked]:
-                if lastSelected != None:
-                    lastSelected.remove()
-                lastSelected = mlab.text(node.start.x, node.start.y, node.name, width=0.2, z=node.start.z)
+        if top.actor.actor._vtk_obj in [o._vtk_obj for o in picked] or bottom.actor.actor._vtk_obj in [o._vtk_obj for o in picked]:
+            if lastSelected != None:
+                lastSelected.remove()
+            lastSelected = mlab.text(node.start.x, node.start.y, node.name, width=0.2, z=node.start.z)
+            if bound != None:
+                (tBound, bBound) = bound
+                tBound.remove()
+                bBound.remove()
+            tBound = mlab.outline(top)
+            bBound = mlab.outline(bottom)
+            bound = (tBound, bBound)
+            break
             
 
 def draw_body(nodes):
