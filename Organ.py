@@ -1,5 +1,5 @@
 class Organ:
-
+    #retention rate.
     def __init__(self, name, id, coverage, radius, health=100):
         self.name = name
         self.id = id

@@ -17,3 +17,6 @@ parameters.wall_viscoelasticity = 15 #degree
 parameters.poission_ratio = 0.5 
 parameters.nominal_reflection_coefficient = 0.8
 parameters.artery_terminal_time = 1 #?
+
+parameters.bacteria_colony_max_cells = 10**9
+parameters.bacteria_death_rate = None

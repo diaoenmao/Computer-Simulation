@@ -7,9 +7,26 @@ import numpy as np
 from Point import *
 from mayavi import mlab
 
+def picker_callback(picker):
+    global vessels, lastSelected
+    if 'lastSelected' not in globals():
+        lastSelected = None
+    
+    picked = picker.actors
+    for (top, bottom, node) in vessels:
+        #if picker.actor in top.actor.actors or picker.actor in bottom.actor.actors:
+            if top.actor.actor._vtk_obj in [o._vtk_obj for o in picked] or bottom.actor.actor._vtk_obj in [o._vtk_obj for o in picked]:
+                if lastSelected != None:
+                    lastSelected.remove()
+                lastSelected = mlab.text(node.start.x, node.start.y, node.name, width=0.2, z=node.start.z)
+            
+
 def draw_body(nodes):
     assert(nodes is not None)
     global body_model
+    global vessels
+    if 'vessels' not in globals():
+        vessels = []
     if 'body_model' not in globals() or body_model is None:
         body_model = {'x': [], 'y': [], 'z': [], 'triangles': []}
         current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -30,11 +47,17 @@ def draw_body(nodes):
                     parts = re.split('\s', line)
                     triangle = [ float(re.sub('\/\/.*', '', parts[0]))-1, float(re.sub('\/\/.*', '', parts[1]))-1, float(re.sub('\/\/.*', '', parts[2]))-1 ]
                     body_model['triangles'].append(triangle)
-    
+    figure = mlab.gcf()
+    mlab.clf()
+    figure.scene.disable_render = True
     mlab.triangular_mesh(body_model['x'], body_model['y'], body_model['z'], body_model['triangles'], color=(1,0.8,0.8), opacity=0.2)
     #Blood vessels
     for node in nodes:
-        draw_blood_vessel(node.start, node.end, node.radius / 100 * parameters.visualization_factor)
+        top, bottom = draw_blood_vessel(node.start, node.end, node.radius / 100 * parameters.visualization_factor)
+        vessels.append((top, bottom, node))
+    figure.scene.disable_render = False
+    picker = figure.on_mouse_pick(picker_callback)
+    picker.tolerance = 0.01
 
     mlab.show()
 
@@ -71,5 +94,6 @@ def draw_blood_vessel(p1, p2, r, color=(1,0,0)):
         row += dz
     for (row, dz ) in zip(neg_z, diffz):
         row += dz 
-    mlab.mesh(x,y,neg_z, color=color)
-    mlab.mesh(x,y,z, color=color)
+    top = mlab.mesh(x,y,neg_z, color=color)
+    bottom = mlab.mesh(x,y,z, color=color)
+    return (top, bottom)
