@@ -1,0 +1,13 @@
+class AbstractImmuneCellCluster(metaclass=ABCMeta):
+    @abstractmethod
+    def count(self):
+        ...
+    @abstractmethod
+    def disrupt(self, bacteriaCount): #Return new bacteria count
+        ...
+    @abstractmethod
+    def grow(self):
+        ...
+    @abstractmethod
+    def moveSpeed(self):
+        ...

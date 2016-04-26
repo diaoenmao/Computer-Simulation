@@ -1,4 +1,5 @@
 from Point import *
+from Organ import Organ
 class Node:
 
     def __init__(self, name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, yaw, pitch, p1, p2, isTail=False):
@@ -15,15 +16,22 @@ class Node:
         self._to = _to
         self.start = p1
         self.end = p2
-        self.tail = isTail
+        self._tail = isTail
         self.yaw = yaw
         self.pitch = pitch
-        self.cells = []
-        self.bacteria = []
+        self.immuneCellClusters = []
+        self.bacteriaCount = 0
         self.edges = []
+        if  self._tail:
+            self._sinks = []
     def setTail(self, isTail):
-        self.tail = isTail
-    
+        self._tail = isTail
+        if not self._tail and hasattr(self, '_sinks'):
+            del self._sinks
+        if self._tail and not hasattr(self, '_sinks'):
+            self._sinks = []
+    def isTail(self):
+        return self._tail
     def addEdge(self, edge):
         self.edges.append(edge)
     def setStart(self, start):
@@ -32,10 +40,14 @@ class Node:
     def setEnd(self, end):
         assert(isinstance(end, Point))
         self.end = end
+    def addOrgan(self, organ):
+        assert(self._tail)
+        assert(isinstance(organ, Organ))
+        self._sinks.append(organ)
     def cellCount(self):
-        return length(cells)
+        return length(self.cells)
     def bacteriaCount(self):
-        return length(bacteria)
+        return self.bacteriaCount
     def __repr__(self):
         return "Node: " + self.name + "\n" \
             + "    id: " + str(self.id) + " length: " + "{:.2f}".format(self.length) + " \n" \
