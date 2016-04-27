@@ -1,6 +1,10 @@
 from Point import *
-from Organ import Organ
-class Node:
+from Organ import *
+from AbstractHost import *
+from AbstractBacteriaCellCluster import *
+from AbstractImmuneCellCluster import *
+
+class Node(AbstractHost):
 
     def __init__(self, name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, yaw, pitch, p1, p2, isTail=False):
         assert(isinstance(p1, Point))
@@ -20,34 +24,72 @@ class Node:
         self.yaw = yaw
         self.pitch = pitch
         self.immuneCellClusters = []
-        self.bacteriaCount = 0
+        self.bacteriaClusters = []
         self.edges = []
         if  self._tail:
             self._sinks = []
+    
     def setTail(self, isTail):
         self._tail = isTail
         if not self._tail and hasattr(self, '_sinks'):
             del self._sinks
         if self._tail and not hasattr(self, '_sinks'):
             self._sinks = []
+    
     def isTail(self):
         return self._tail
+    
     def addEdge(self, edge):
         self.edges.append(edge)
+    
     def setStart(self, start):
         assert(isinstance(start, Point))
         self.start = start
+    
     def setEnd(self, end):
         assert(isinstance(end, Point))
         self.end = end
+
     def addOrgan(self, organ):
         assert(self._tail)
         assert(isinstance(organ, Organ))
         self._sinks.append(organ)
-    def cellCount(self):
-        return length(self.cells)
-    def bacteriaCount(self):
-        return self.bacteriaCount
+
+    def enterImmuneCellCluster(self, cluster):
+        assert(isinstance(cluster, AbstractImmuneCellCluster))
+        self.immuneCellClusters.append(cluster)
+
+    def exitImmuneCellCluster(self):
+        assert(isinstance(cluster, AbstractImmuneCellCluster))
+        assert(cluster in self.immuneCellClusters)
+        self.immuneCellClusters.remove(cluster)
+
+    def getImmuneCellCount(self):
+        count = 0
+        for cluster in self.immuneCellClusters:
+            count += cluster.getCellCount()
+            
+    def getBacteriaCount(self):
+        count = 0
+        for cluster in self.bacteriaClusters:
+            count += cluster.getCellCount()
+        return count
+
+    def getImmuneCellClusters(self):
+        return self.immuneCellClusters
+
+    def getBacteriaClusters(self):
+        return self.bacteriaClusters
+
+    def exitBacteriaCluster(self, cluster):
+        assert(isinstance(cluster, AbstractBacteriaCellCluster))
+        assert(cluster in self.bacteriaClusters)
+        self.bacteriaClusters.remove(cluster)
+
+    def enterBacteriaCluster(self, cluster):
+        assert(isinstance(cluster, AbstractBacteriaCellCluster))
+        self.bacteriaClusters.append(cluster)
+
     def __repr__(self):
         return "Node: " + self.name + "\n" \
             + "    id: " + str(self.id) + " length: " + "{:.2f}".format(self.length) + " \n" \
