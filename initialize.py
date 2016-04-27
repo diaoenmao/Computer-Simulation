@@ -23,8 +23,8 @@ def setStartEnd(node):
         if child.start == none_point:
             child.setStart(Point(node.end.x, node.end.y, node.end.z))
         if child.end == none_point:
-            child.setEnd(Point(child.start.x + math.sin(math.radians(child.yaw)) * child.length / 100 * parameters.visualization_factor, \
-                child.start.y + math.cos(math.radians(child.yaw)) * child.length / 100 * parameters.visualization_factor, \
+            child.setEnd(Point(child.start.x + math.sin(math.radians(child.yaw)) * child.length * parameters.visualization_factor, \
+                child.start.y + math.cos(math.radians(child.yaw)) * child.length * parameters.visualization_factor, \
                 child.start.z + math.sin(math.radians(child.pitch))))
     for child in children:
         setStartEnd(child)
@@ -62,10 +62,6 @@ def buildGraph(rows):
             p2 = Point(0,0,0)
         node = Node(name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, yaw, pitch, p1, p2)
         nodes.append(node)
-
-        #Set end
-        if(node._to == 0):
-            node.setTail(True)
     
     #Make node connections with its children.    
     nodes = sorted(nodes, key=lambda node: node.id)

@@ -32,6 +32,10 @@ class AbstractHost(metaclass=ABCMeta):
     @abstractmethod
     def enterBacteriaCluster(self, cluster):
         ...
+        
+    @abstractmethod
+    def timeStep(self):
+        ...
 
     @abstractmethod
     def __repr__(self):

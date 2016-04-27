@@ -1,12 +1,12 @@
-from AbstractSink import *
 from AbstractImmuneCellCluster import *
 from AbstractBacteriaCellCluster import *
+from AbstractHost import *
 from parameters import * 
 from sequences import bacteriaClusterSq
 from heapq import heappush, heappop
 from globals import globals
 
-class GenericSink(AbstractSink):
+class GenericSink(AbstractHost):
     def __init__(self, name, cluster):
         self.name = name
         self.id = bacteriaClusterSq.getNextVal()
@@ -16,6 +16,7 @@ class GenericSink(AbstractSink):
         if cluster is not None:
             assert(isinstance(cluster, AbstractBacteriaCellCluster))
             self.bacteriaClusters.append(cluster)
+
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)

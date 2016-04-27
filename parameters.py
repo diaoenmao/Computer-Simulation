@@ -14,7 +14,7 @@ parameters.visualization_factor = 13
 
 #Simulation parameters
 parameters.blood_density = 1.05e3 #kg/m^3
-parameters.viscosity = 0.04 #poise
+parameters.viscosity = 0.004 #Pa * s 
 parameters.wall_viscoelasticity = 15 #degree
 parameters.poission_ratio = 0.5 
 parameters.nominal_reflection_coefficient = 0.8
@@ -29,4 +29,4 @@ parameters.organ_grid_resolution = 1e-4 #m
 #Time parameters
 parameters.delta_t = 1 #s
 parameters.bacteria_lifespan = 3600 #s
-parameters.bacteria_reproduction_rate = 5e-5
+parameters.bacteria_reproduction_rate = 5e-5 #1/s

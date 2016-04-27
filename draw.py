@@ -61,7 +61,7 @@ def draw_body(nodes):
     mlab.triangular_mesh(body_model['x'], body_model['y'], body_model['z'], body_model['triangles'], color=(1,0.8,0.8), opacity=0.2)
     #Blood vessels
     for node in nodes:
-        top, bottom = draw_blood_vessel(node.start, node.end, node.radius / 100 * parameters.visualization_factor)
+        top, bottom = draw_blood_vessel(node.start, node.end, node.radius * parameters.visualization_factor)
         vessels.append((top, bottom, node))
     figure.scene.disable_render = False
     picker = figure.on_mouse_pick(picker_callback)

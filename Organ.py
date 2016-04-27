@@ -1,10 +1,10 @@
 from Node import *
-from AbstractSink import *
+from AbstractHost import *
 import numpy as np
 from globals import globals
 from parameters import *
 
-class Organ(AbstractSink):
+class Organ(AbstractHost):
     #retention rate.
     def __init__(self, name, id, coverage, sideLength, length, health=100):
         self.name = name
