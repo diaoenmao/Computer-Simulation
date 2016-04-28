@@ -3,15 +3,16 @@ from Point import *
 from sequences import immuneCellClusterSq
 
 class TestImmuneCellCluster(AbstractImmuneCellCluster):
-	def __init__(self, host):
+	def __init__(self, host, cellCount):
 		self.name = "Test immune cell"
         self.id = immuneCellClusterSq.getNextVal()
         self.isDead = False
         self.location = None
-        self.host is not None
+        self.host = None
+        self.cellCount = cellCount
 
     def getCellcount(self):
-        return 0
+        return self.cellCount
 
     def getName(self):
         return self.name
@@ -33,8 +34,13 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
         return 0
 
     def inContact(self, cluster):
-        self.isDead = True
-        return cluster
+        if self.isDead:
+            return
+        if(isinstance(cluster, TestImmuneCellCluster)):
+            cluster.death()
+            
+            #merge clusters
+            self.cellCount += cluster.getCellcount()
     
     def timeStep(self):
         assert(self.host is not None)
@@ -50,6 +56,7 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
     
     def enterHost(self, host):
         self.host = host
+        self.location = None
 
     def canExitHost(self):
         return True
@@ -57,7 +64,7 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
     def exitHost(self):
         self.host = None
     
-    def disrupt(self, bacteriaClusters): #Return new bacteria count or None
+    def disrupt(self, bacteriaClusters): #Return T / F if disrupt
         assert(self.host is not None)
         assert(self.location is not None)
         return False

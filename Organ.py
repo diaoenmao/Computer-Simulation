@@ -51,11 +51,25 @@ class Organ(AbstractHost):
         return parameters.sink_velocity
 
     def enterImmuneCellCluster(self, cluster):
+        assert(isinstance(cluster, AbstractImmuneCellCluster)
         self.immuneCellClusters.append(cluster)
-    
-    def exitImmuneCellCluster(self,  cluster):
-        assert(cluster in immuneCellClusters)
-        immuneCellClusters.remove(cluster)
+        container = self._grid[self._grid_entrance.x][self._grid_entrance.y][self._grid_entrance.z]
+        assert container is not None
+
+        container.immuneCellClusters.append(cluster)
+        cluster.enterHost(self)
+        cluster.setRelativeLocation(self._grid_entrance)
+
+    def exitImmuneCellCluster(self):
+        for cluster in self.immuneCellClusters:
+            if not cluster.canExitHost():
+                continue
+            point = cluster.getRelativeLocation()
+            assert point is not None
+            if point == self._grid_exit:
+                #exit
+                cluster.exitHost(self)
+                self.immuneCellClusters.remove(cluster)
 
     def getImmuneCellCount(self):
         cellCount = 0
@@ -84,9 +98,19 @@ class Organ(AbstractHost):
         assert container is not None
 
         container.bacteriaClusters.append(cluster)
+        cluster.enterHost(self)
+        cluster.setRelativeLocation(self._grid_entrance)
 
     def exitBacteriaCluster(self):
-        assert False
+        for cluster in self.bacteriaClusters:
+            if not cluster.canExitHost():
+                continue
+            point = cluster.getRelativeLocation()
+            assert point is not None
+            if point == self._grid_exit:
+                #exit
+                cluster.exitHost(self)
+                self.bacteriaClusters.remove(cluster)
 
     def timeStep(self):
         #Move, Grow bacteria
@@ -101,6 +125,15 @@ class Organ(AbstractHost):
             (time, flow) = heappop(self._flowEvent)
             self.residualVolume -= flow
             assert(self.residualVolume > 0)
+
+        #Calculate new cells position
+        
+        #Interactions betwee cell clusters
+
+        #exits
+        self.exitBacteriaCluster()
+        self.exitImmuneCellCluster()
+        assert False
 
     def __repr__(self):
         return "Organ: " + self.name + "\n" \

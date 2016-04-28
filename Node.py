@@ -81,7 +81,7 @@ class Node(AbstractHost):
         self.immuneCellClusters.append(cluster)
         cluster.enterHost(self)
 
-    def exitImmuneCellCluster(self):
+    def exitImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         assert(cluster in self.immuneCellClusters)
         assert(cluster.canExitHost(self))
@@ -108,12 +108,15 @@ class Node(AbstractHost):
     def exitBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
         assert(cluster in self.bacteriaClusters)
+        assert(cluster.canExitHost(self))
         self.bacteriaClusters.remove(cluster)
+        cluster.exitHost(self)
 
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
         self.bacteriaClusters.append(cluster)
-    
+        cluster.enterHost(self)
+
     def setFlow(self, flow): #return actualFlow
         if (self.residualVolume + flow) > self.volume:
             flow = self.volume - self.residualVolume
@@ -167,6 +170,8 @@ class Node(AbstractHost):
         clustersLeft = []
         cellsLeftCount = 0
         for cluster in self.bacteriaClusters:
+            if not cluster.canExitHost():
+                continue
             #random child node to enter
             hostToEnter = int(np.random.uniform(0, len(self.hosts)))
             self.hosts[hostToEnter].enterBacteriaCluster(cluster)
@@ -181,6 +186,8 @@ class Node(AbstractHost):
         clustersLeft = []
         cellsLeftCount = 0
         for cluster in self.immuneCellClusters:
+            if not cluster.canExitHost():
+                continue
             #random child node to enter
             hostToEnter = int(np.random.uniform(0, len(self.hosts)))
             self.hosts[hostToEnter].enterImmuneCellCluster(cluster)

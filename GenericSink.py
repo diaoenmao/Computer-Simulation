@@ -22,6 +22,7 @@ class GenericSink(AbstractHost):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)
         heappush(self.exitImmuneCellClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
+        cluster.enterHost(self)
 
     def exitImmuneCellCluster(self):
         assert False #detect bacteria
@@ -30,7 +31,11 @@ class GenericSink(AbstractHost):
         exited = 0
         while len(self.exitImmuneCellClusterEvent) > 0 and self.exitImmuneCellClusterEvent[0][0] <= globals.time:
             (time, cluster) = heappop(self.exitImmuneCellClusterEvent)
-            exited += cluster.getBacteriaCount()
+            if not cluster.canExitHost():
+                heappush(self.exitImmuneCellClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
+            else:
+                self.immuneCellClusters.remove(cluster)
+                exited += cluster.getImmuneCellCount()
         return exited
 
     def getImmuneCellCount(self):
@@ -42,6 +47,7 @@ class GenericSink(AbstractHost):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
         bacteriaClusters.append(cluster)
         heappush(self.exitBacteriaClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
+        cluster.enterHost(self)
 
     def timeStep(self):
         #Grow bacteria
@@ -51,7 +57,14 @@ class GenericSink(AbstractHost):
         #Immune response -> move, attack bacteria, remove infected host cells
         for cluster in self.immuneCellClusters:
             cluster.timeStep(self)
+
+        #calculate exit flow
+
+        #interations
+
+        #exits
         self.exitBacteriaCluster()
+        self.exitImmuneCellCluster()
 
     def getBacteriaCount(self):
         count = 0
@@ -69,7 +82,11 @@ class GenericSink(AbstractHost):
         exited = 0
         while len(self.exitBacteriaClusterEvent) > 0 and self.exitBacteriaClusterEvent[0][0] <= globals.time:
             (time, cluster) = heappop(self.exitBacteriaClusterEvent)
-            exited += cluster.getBacteriaCount()
+            if not cluster.canExitHost():
+                heappush(self.exitBacteriaClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
+            else:
+                self.bacteriaClusters.remove(cluster)
+                exited += cluster.getBacteriaCount()
         return exited
 
     def setFlow(self, flow): #return actualFlow
