@@ -3,8 +3,8 @@ from Point import *
 from sequences import immuneCellClusterSq
 
 class TestImmuneCellCluster(AbstractImmuneCellCluster):
-	def __init__(self, host, cellCount):
-		self.name = "Test immune cell"
+    def __init__(self, host, cellCount):
+        self.name = "Test immune cell"
         self.id = immuneCellClusterSq.getNextVal()
         self.isDead = False
         self.location = None
@@ -29,7 +29,10 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
 
     def death(self):
         self.isDead = True
-    
+
+    def _age(self):
+        return
+            
     def getMoveSpeed(self):
         return 0
 
@@ -41,10 +44,10 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
             
             #merge clusters
             self.cellCount += cluster.getCellcount()
-		if(isinstance(cluster, TestbacteriaClusters)):
-			cluster.beDisrupted(self.cellCount)
-			self.disrupt(cluster.getCellcount())
-			
+        if(isinstance(cluster, TestbacteriaClusters)):
+            cluster.beDisrupted(self.cellCount)
+            self.disrupt(cluster.getCellcount())
+            
     def timeStep(self):
         assert(self.host is not None)
         assert(self.location is not None)

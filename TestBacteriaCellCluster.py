@@ -3,16 +3,16 @@ from Point import *
 from sequences import bacteriaClusterSq
 
 class TestBacteriaCellCluster(AbstractCellCluster):
-	def __init__(self, host):
-		self.name = "Test bacteria cell"
+    def __init__(self, host):
+        self.name = "Test bacteria cell"
         self.id = bacteriaClusterSq.getNextVal()
         self.isDead = False
         self.location = None
         self.host = None
         self.cellCount = cellCount
-		
+        
     def getCellcount(self):
-		return self.cellCount
+        return self.cellCount
 
     def getName(self):
         return self.name
@@ -30,6 +30,11 @@ class TestBacteriaCellCluster(AbstractCellCluster):
     def death(self):
         self.isDead = True
 
+    def _age(self):
+        self.cellCount -= 1
+        if(self.cellCount <= 0)
+            self.isDead = True
+        
     def getMoveSpeed(self):
         return 0
 
@@ -46,13 +51,14 @@ class TestBacteriaCellCluster(AbstractCellCluster):
         assert(self.host is not None)
         assert(self.location is not None)
         self._reproduce()
+        self._age()
         self._move()
 
-	def _move(self):
+    def _move(self):
         return
 
     def beDisrupted(self, count): #Return new bacteria count
-    	self.cellCount -= int(count/self.cellCount)
+        self.cellCount -= int(count/self.cellCount)
 
     def __repr__(self):
         return self.name + "\n    id: " + str(self.id)

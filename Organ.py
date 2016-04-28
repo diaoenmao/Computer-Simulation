@@ -51,10 +51,10 @@ class Organ(AbstractHost):
         return parameters.sink_velocity
 
     def enterImmuneCellCluster(self, cluster):
-        assert(isinstance(cluster, AbstractImmuneCellCluster)
+        assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)
         container = self._grid[self._grid_entrance.x][self._grid_entrance.y][self._grid_entrance.z]
-        assert container is not None
+        assertcontainer is not None
 
         container.immuneCellClusters.append(cluster)
         cluster.enterHost(self)
