@@ -5,7 +5,9 @@ from AbstractBacteriaCellCluster import *
 from AbstractImmuneCellCluster import *
 from GenericSink import *
 from parameters import * 
+from globals import globals
 import math
+import numpy as np
 
 class Node(AbstractHost):
 
@@ -32,6 +34,14 @@ class Node(AbstractHost):
         if  self._to == [0]:
             self.setTail(True)
 
+        if self.id == 1: #ascending aorta
+            self._velocity = parameters.ejection_velocity
+        else:
+            self._velocity = 0
+        self.volume = self.radius ** 2 * math.pi * self.length
+        self.residualVolume = 0
+        self.parent = None
+
     def setTail(self, isTail):
         self._tail = isTail
         if not self._tail and hasattr(self, '_sinks'):
@@ -41,16 +51,15 @@ class Node(AbstractHost):
             genericSink = GenericSink("Sink for Node id: " + str(self.id) + ", " + self.name, None)
             cNaught = (self.youngs_modulus * self.wall_thickness / (2 * parameters.blood_density * self.radius)) ** 0.5
             zNaught = parameters.blood_density * cNaught / (1 - parameters.poission_ratio) ** 0.5 
-            print( self._resistance )
             self._resistance += zNaught * (1 + parameters.nominal_reflection_coefficient) / (1 - parameters.nominal_reflection_coefficient)
-            print( self._resistance )
 
     def isTail(self):
         return self._tail
     
     def addEdge(self, edge):
+        assert(isinstance(edge, Node))
         self.edges.append(edge)
-    
+
     def setStart(self, start):
         assert(isinstance(start, Point))
         self.start = start
@@ -64,14 +73,20 @@ class Node(AbstractHost):
         assert(isinstance(organ, Organ))
         self._sinks.append(organ)
 
+    def getFlowVelocity(self):
+        return self._velocity
+
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)
+        cluster.enterHost(self)
 
     def exitImmuneCellCluster(self):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         assert(cluster in self.immuneCellClusters)
+        assert(cluster.canExitHost(self))
         self.immuneCellClusters.remove(cluster)
+        cluster.exitHost(self)
 
     def getImmuneCellCount(self):
         count = 0
@@ -98,11 +113,87 @@ class Node(AbstractHost):
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
         self.bacteriaClusters.append(cluster)
+    
+    def setFlow(self, flow): #return actualFlow
+        if (self.residualVolume + flow) > self.volume:
+            flow = self.volume - self.residualVolume
+            self.residualVolume = self.volume
+        else:
+            self.residualVolume += flow
+        return flow
+
+    def setParent(self, p): #may be used to calculate this velocity
+        assert(isinstance(p, Node))
+        self._parent = p
+
+    def getFlowVelocity(self):
+        if self.parent is not None:
+            self._velocity = self.parent.radius / self.radius * self.parent._velocity
+        return self._velocity
 
     def timeStep(self):
-        assert False
-        deltaP = 0.5 * parameters.blood_density * ()
-        flow = deltaP * self._resistance
+        assert(len(self.edges) > 0 or len(self._sinks) > 0)
+        hosts = [i for i in self.edges]
+        hosts.extend(self._sinks)
+        flows = []
+        actualFlow = 0
+        for node in hosts:
+            node._velocity = self.radius / node.radius * self._velocity
+            deltaP = 0.5 * parameters.blood_density * (self._velocity ** 2 - node._velocity ** 2)
+            flowRate = deltaP / self._resistance
+            flow = flowRate * parameters.delta_t
+            if flow > self.volume:
+                if not globals.printed_lowering_delta_t_message:
+                    print('******Please consider lowering delta_t.******')
+                    globals.printed_lowering_delta_t_message = True
+                flow = self.volume
+            flows.append(flow)
+        if sum(flows) > self.volume:
+            if not globals.printed_lowering_delta_t_message:
+                print('******Please consider lowering delta_t.******')
+                globals.printed_lowering_delta_t_message = True
+            factor = self.volume / sum(flows)
+            flows = [float(i) * factor for i in flows ]
+
+
+        for flow, host in zip(flows, self.hosts):
+            flow = host.setFlow(flow)
+            actualFlow += flow
+
+        approxBacteriaCellsToExit = actualFlow / self.volume * self.getBacteriaCount()
+        approxImmuneCellsToExit = actualFlow / self.volume * self.getImmuneCellCount()
+        
+        #Handle bacteria and immune cells
+        clustersLeft = []
+        cellsLeftCount = 0
+        for cluster in self.bacteriaClusters:
+            #random child node to enter
+            hostToEnter = int(np.random.uniform(0, len(self.hosts)))
+            self.hosts[hostToEnter].enterBacteriaCluster(cluster)
+            clustersLeft.append(cluster)
+            cellsLeftCount += cluster.getCellcount()
+            if cellsLeftCount >= approxBacteriaCellsToExit:
+                break
+        
+        for cluster in clustersLeft:
+            self.exitBacteriaCluster(cluster)
+
+        clustersLeft = []
+        cellsLeftCount = 0
+        for cluster in self.immuneCellClusters:
+            #random child node to enter
+            hostToEnter = int(np.random.uniform(0, len(self.hosts)))
+            self.hosts[hostToEnter].enterImmuneCellCluster(cluster)
+            clustersLeft.append(cluster)
+            cellsLeftCount += cluster.getCellcount()
+            if cellsLeftCount >= approxImmuneCellsToExit:
+                break
+
+        for cluster in clustersLeft:
+            self.exitImmuneCellCluster(cluster)
+        
+        self.residualVolume -= actualFlow
+        assert(self.residualVolume >= 0)
 
     def __repr__(self):
         return "Node: " + self.name + "\n" \

@@ -73,6 +73,7 @@ def buildGraph(rows):
         for j in node._to:
             if(j>0):
                 node.addEdge(nodes[j-1])
+                nodes[j-1].setParent(node)
 
     #Try to figure out start and end
     setStartEnd(start_node)

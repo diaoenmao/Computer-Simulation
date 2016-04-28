@@ -2,6 +2,18 @@ from abc import *
 
 class AbstractHost(metaclass=ABCMeta):
     @abstractmethod
+    def setFlow(self, flow): #return actualFlow
+        ...
+
+    @abstractmethod
+    def setParent(self, parent): #may be used to calculate this velocity
+        ...
+
+    @abstractmethod
+    def getFlowVelocity(self):
+        ...
+
+    @abstractmethod
     def enterImmuneCellCluster(self, cluster):
         ...
 

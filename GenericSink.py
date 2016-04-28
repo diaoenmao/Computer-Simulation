@@ -10,7 +10,8 @@ class GenericSink(AbstractHost):
     def __init__(self, name, cluster):
         self.name = name
         self.id = bacteriaClusterSq.getNextVal()
-        self.exitBacteriaCountEvent = []
+        self.exitBacteriaClusterEvent = []
+        self.exitImmuneCellClusterEvent = []
         self.immuneCellClusters = []
         self.bacteriaClusters = []
         if cluster is not None:
@@ -20,10 +21,17 @@ class GenericSink(AbstractHost):
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)
+        heappush(self.exitImmuneCellClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
 
-    def exitImmuneCellCluster(self, cluster):
-        assert(cluster in self.immuneCellClusters)
-        self.immuneCellClusters.remove(cluster)
+    def exitImmuneCellCluster(self):
+        assert False #detect bacteria
+        if False:
+            ...
+        exited = 0
+        while len(self.exitImmuneCellClusterEvent) > 0 and self.exitImmuneCellClusterEvent[0][0] <= globals.time:
+            (time, cluster) = heappop(self.exitImmuneCellClusterEvent)
+            exited += cluster.getBacteriaCount()
+        return exited
 
     def getImmuneCellCount(self):
         count = 0
@@ -33,7 +41,7 @@ class GenericSink(AbstractHost):
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
         bacteriaClusters.append(cluster)
-        heappush(self.exitBacteriaCountEvent, (globals.time + parameters.sink_travel_time, cluster))
+        heappush(self.exitBacteriaClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
 
     def timeStep(self):
         #Grow bacteria
@@ -43,6 +51,7 @@ class GenericSink(AbstractHost):
         #Immune response -> move, attack bacteria, remove infected host cells
         for cluster in self.immuneCellClusters:
             cluster.timeStep(self)
+        self.exitBacteriaCluster()
 
     def getBacteriaCount(self):
         count = 0
@@ -58,10 +67,21 @@ class GenericSink(AbstractHost):
 
     def exitBacteriaCluster(self):
         exited = 0
-        while len(self.exitBacteriaCountEvent) > 0 and self.exitBacteriaCountEvent[0][0] <= globals.time:
-            (time, bacteriaCount) = heappop(self.exitBacteriaCountEvent)
-            exited += bacteriaCount
+        while len(self.exitBacteriaClusterEvent) > 0 and self.exitBacteriaClusterEvent[0][0] <= globals.time:
+            (time, cluster) = heappop(self.exitBacteriaClusterEvent)
+            exited += cluster.getBacteriaCount()
         return exited
+
+    def setFlow(self, flow): #return actualFlow
+        assert False
+        return flow
+
+    def setParent(self, p): #may be used to calculate this velocity
+        assert(isinstance(p, Node))
+        self._parent = p
+
+    def getFlowVelocity(self):
+        return parameters.sink_velocity
 
     def __repr__(self):
         return "Sink: " + self.name + "\n" \

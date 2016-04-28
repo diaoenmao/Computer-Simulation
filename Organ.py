@@ -26,12 +26,30 @@ class Organ(AbstractHost):
         ys = np.random(0, self._lengthBoxes, 2)
         self._grid_entrance = Point(int(xs[0]), int(ys[0]), int(zs[0]))
         self._grid_exit = Point(int(xs[1]), int(ys[1]), int(zs[1]))
+        self.volume = sideLength ** 2 * length
+        self.residualVolume = 0
+        self._flowEvent = []
     def setHealth(self, heath):
         self.heath = heath
     
     def getHealth(self, heath):
         return self.health
     
+    def setFlow(self, flow): #return actualFlow
+        if (self.residualVolume + flow) > self.volume:
+            flow = self.volume - self.residualVolume
+            self.residualVolume = self.volume
+        else:
+            self.residualVolume += flow
+        heappush(self._flowEvent, (globals.time + int(self.length / (self.getFlowVelocity() * parameters.delta_t)), flow))
+        return flow
+
+    def setParent(self, parent): #may be used to calculate this velocity
+        self.parent = parent
+
+    def getFlowVelocity(self):
+        return parameters.sink_velocity
+
     def enterImmuneCellCluster(self, cluster):
         self.immuneCellClusters.append(cluster)
     
@@ -56,29 +74,34 @@ class Organ(AbstractHost):
     def getBacteriaClusters(self):
         return self.bacteriaClusters
 
+    def getImmuneCellClusters(self):
+        return self.immuneCellClusters
+
     def enterBacteriaCluster(self, cluster):
+        assert(isinstance(cluster, AbstractBacteriaCellCluster))
         bacteriaClusters.append(cluster)
-        location = np.random.uniform(0, self._sideLengthBoxes, 2)
-        location.append(np.random.uniform(0, self._lengthBoxes))
-        location = [int(i) for i in location]
-        container = self._grid[location[0]][location[1]][location[2]]
+        container = self._grid[self._grid_entrance.x][self._grid_entrance.y][self._grid_entrance.z]
         assert container is not None
 
         container.bacteriaClusters.append(cluster)
 
     def exitBacteriaCluster(self):
-        ...
+        assert False
 
     def timeStep(self):
-        #Grow bacteria
+        #Move, Grow bacteria
         for cluster in self.bacteriaClusters:
             cluster.timeStep(self)
 
         #Immune response -> move, attack bacteria, remove infected host cells
         for cluster in self.immuneCellClusters:
             cluster.timeStep(self)
+        
+        while len(self._flowEvent) > 0 and self._flowEvent[0][0] <= globals.time:
+            (time, flow) = heappop(self._flowEvent)
+            self.residualVolume -= flow
+            assert(self.residualVolume > 0)
 
-        self.exitBacteriaCluster()
     def __repr__(self):
         return "Organ: " + self.name + "\n" \
             + "    id: " + str(self.id) + " coverage: " + str(self.coverage) + " \n" \
