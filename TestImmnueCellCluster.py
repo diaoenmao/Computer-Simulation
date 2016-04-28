@@ -41,7 +41,10 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
             
             #merge clusters
             self.cellCount += cluster.getCellcount()
-    
+		if(isinstance(cluster, TestbacteriaClusters)):
+			cluster.beDisrupted(self.cellCount)
+			self.disrupt(cluster.getCellcount())
+			
     def timeStep(self):
         assert(self.host is not None)
         assert(self.location is not None)
@@ -64,7 +67,7 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
     def exitHost(self):
         self.host = None
     
-    def disrupt(self, bacteriaClusters): #Return T / F if disrupt
+    def disrupt(self, count): #Return T / F if disrupt
         assert(self.host is not None)
         assert(self.location is not None)
-        return False
+        return
