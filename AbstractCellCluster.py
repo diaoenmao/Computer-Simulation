@@ -24,10 +24,6 @@ class AbstractCellCluster(metaclass=ABCMeta):
     @abstractmethod
     def _age(self): #private method
         ...
-        
-    @abstractmethod
-    def _move(self):
-        ...
 
     @abstractmethod
     def death(self):

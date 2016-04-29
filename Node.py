@@ -76,6 +76,9 @@ class Node(AbstractHost):
     def getFlowVelocity(self):
         return self._velocity
 
+    def getChildren(self): #return both nodes and organs
+        assert False
+
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)

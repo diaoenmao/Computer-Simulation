@@ -59,7 +59,7 @@ class GenericSink(AbstractHost):
             cluster.timeStep(self)
 
         #calculate exit flow
-
+        assert False
         #interations
 
         #exits

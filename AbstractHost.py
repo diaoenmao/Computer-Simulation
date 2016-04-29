@@ -14,6 +14,10 @@ class AbstractHost(metaclass=ABCMeta):
         ...
 
     @abstractmethod
+    def getChildren(self):
+        ...
+
+    @abstractmethod
     def enterImmuneCellCluster(self, cluster):
         ...
 

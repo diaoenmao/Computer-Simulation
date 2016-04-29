@@ -38,3 +38,4 @@ parameters.bacteria_reproduction_rate = 5e-5 #1/s
 
 #initial bacteria infestation
 parameters.bacteria_t0 = {} #id: cluster 
+parameters.immune_t0 = {} #id: cluster

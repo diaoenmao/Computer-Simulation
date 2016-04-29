@@ -52,10 +52,6 @@ class TestBacteriaCellCluster(AbstractCellCluster):
         assert(self.location is not None)
         self._reproduce()
         self._age()
-        self._move()
-
-    def _move(self):
-        return
 
     def beDisrupted(self, count): #Return new bacteria count
         self.cellCount -= int(count/self.cellCount)
