@@ -20,7 +20,7 @@ class Organ(AbstractHost):
         self.immuneCellClusters = []
         self._sideLengthBoxes = round((sideLength + 0.5) / parameters.organ_grid_resolution)
         self._lengthBoxes = round((length + 0.5 ) / parameters.organ_grid_resolution)
-        self._grid = np.empty((sideLengthBoxes, sideLengthBoxes, lengthBoxes), dtype=Container)
+        self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes), dtype=Container)
         xs = np.random(0, self._sideLengthBoxes, 2)
         zs = np.random(0, self._sideLengthBoxes, 2)
         ys = np.random(0, self._lengthBoxes, 2)
@@ -54,7 +54,7 @@ class Organ(AbstractHost):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         self.immuneCellClusters.append(cluster)
         container = self._grid[self._grid_entrance.x][self._grid_entrance.y][self._grid_entrance.z]
-        assertcontainer is not None
+        assert container is not None
 
         container.immuneCellClusters.append(cluster)
         cluster.enterHost(self)
@@ -129,7 +129,9 @@ class Organ(AbstractHost):
         #Calculate new cells position
         
         #Interactions betwee cell clusters
-
+        for index, container in np.ndenumerate(self._grid):
+            assert(isinstance(container, Container))
+            container.interact()
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
