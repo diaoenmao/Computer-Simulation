@@ -111,7 +111,27 @@ class Organ(AbstractHost):
                 #exit
                 cluster.exitHost(self)
                 self.bacteriaClusters.remove(cluster)
-
+                
+    def interact(self):
+        if not self.bacteriaClusters:
+            for bacteriaCluster1 in bacteriaClusters:
+                for bacteriaCluster2 in bacteriaClusters:
+                    if(bacteriaCluster1.getRelativeLocation()==bacteriaCluster2.getRelativeLocation()):
+                        bacteriaCluster1.inContact(bacteriaCluster2)
+                        bacteriaCluster2.inContact(bacteriaCluster1)
+        if not self.immuneCellClusters:
+            for immuneCellCluster1 in immuneCellClusters:
+                for immuneCellCluster2 in immuneCellClusters:
+                    if(immuneCellCluster1.getRelativeLocation()==immuneCellCluster2.getRelativeLocation()):
+                        immuneCellCluster1.inContact(immuneCellCluster2)
+                        immuneCellCluster2.inContact(immuneCellCluster1)
+        if not self.bacteriaClusters and not self.immuneCellClusters:
+            for bacteriaCluster in bacteriaClusters:
+                for immuneCellCluster in immuneCellClusters:
+                    if(bacteriaCluster.getRelativeLocation()==immuneCellCluster.getRelativeLocation()):
+                        bacteriaCluster.inContact(cluster)
+                        immuneCellCluster.inContact(bacteriaCluster)
+                    
     def timeStep(self):
         #Move, Grow bacteria
         for cluster in self.bacteriaClusters:
@@ -127,11 +147,9 @@ class Organ(AbstractHost):
             assert(self.residualVolume > 0)
 
         #Calculate new cells position
-        
+        self.interact()
         #Interactions betwee cell clusters
-        for index, container in np.ndenumerate(self._grid):
-            assert(isinstance(container, Container))
-            container.interact()
+
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
