@@ -35,7 +35,7 @@ class GenericSink(AbstractHost):
                 heappush(self.exitImmuneCellClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
             else:
                 self.immuneCellClusters.remove(cluster)
-                exited += cluster.getImmuneCellCount()
+                exited += cluster.getCellCount()
         return exited
 
     def getImmuneCellCount(self):
@@ -86,7 +86,7 @@ class GenericSink(AbstractHost):
                 heappush(self.exitBacteriaClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
             else:
                 self.bacteriaClusters.remove(cluster)
-                exited += cluster.getBacteriaCount()
+                exited += cluster.getCellCount()
         return exited
 
     def setFlow(self, flow): #return actualFlow

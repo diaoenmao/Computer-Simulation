@@ -52,6 +52,7 @@ class TestImmuneCellCluster(AbstractImmuneCellCluster):
         assert(self.host is not None)
         assert(self.location is not None)
         self._reproduce()
+        self._age()
         self._move()
 
     def _move():
