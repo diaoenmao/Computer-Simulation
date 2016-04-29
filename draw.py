@@ -1,11 +1,12 @@
 from parameters import parameters
 import os
 import re
-#import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from Point import *
 from mayavi import mlab
+import threading
+
+showingFigure = False
 
 def picker_callback(picker):
     global vessels, lastSelected, bound
@@ -33,6 +34,9 @@ def draw_body(nodes):
     assert(nodes is not None)
     global body_model
     global vessels
+    global figure
+    global showingFigure
+
     if 'vessels' not in globals():
         vessels = []
     if 'body_model' not in globals() or body_model is None:
@@ -55,7 +59,9 @@ def draw_body(nodes):
                     parts = re.split('\s', line)
                     triangle = [ float(re.sub('\/\/.*', '', parts[0]))-1, float(re.sub('\/\/.*', '', parts[1]))-1, float(re.sub('\/\/.*', '', parts[2]))-1 ]
                     body_model['triangles'].append(triangle)
-    figure = mlab.gcf()
+    if 'figure' not in globals():
+        figure = mlab.gcf()
+    
     mlab.clf()
     figure.scene.disable_render = True
     mlab.triangular_mesh(body_model['x'], body_model['y'], body_model['z'], body_model['triangles'], color=(1,0.8,0.8), opacity=0.2)
@@ -66,10 +72,41 @@ def draw_body(nodes):
     figure.scene.disable_render = False
     picker = figure.on_mouse_pick(picker_callback)
     picker.tolerance = 0.01
+    global colors
+    colors = None
+    anim()
 
-    mlab.show()
+@mlab.show
+@mlab.animate(delay=parameters.refresh_interval * 1000)
+def anim():
+    global vessels, colors
+    print(len(vessels))
+    while True:
+        for (top, bottom, node) in vessels:
+            lutT = top.module_manager.scalar_lut_manager.lut.table.to_array()
+            lutB = bottom.module_manager.scalar_lut_manager.lut.table.to_array()
+            if colors is None:
+                colors = np.ones(np.shape(lutT[:, 0])) * 255
+                lutT[:,0] = colors
+                lutB[:,0] = colors
+            else:
+                lutT[:,0] = colors
+                lutB[:,0] = colors
 
-def draw_blood_vessel(p1, p2, r, color=(1,0,0)):
+            lutT[:,1:3] = np.zeros(np.shape(lutT[:, 1:3]))
+            lutB[:,1:3] = np.zeros(np.shape(lutB[:, 1:3]))
+            top.module_manager.scalar_lut_manager.lut.table = lutT
+            bottom.module_manager.scalar_lut_manager.lut.table = lutB
+        
+        mlab.draw()        
+        colors = colors - 5
+        print(colors[0])
+        if colors[0] < 0:
+            colors = np.ones(np.shape(lutT[:, 0])) * 255
+        print("updating graph")
+        yield
+
+def draw_blood_vessel(p1, p2, r, colormap='Reds'):
     assert(isinstance(p1, Point))
     assert(isinstance(p2, Point))
     if(p2.y - p1.y) < 0:
@@ -83,9 +120,9 @@ def draw_blood_vessel(p1, p2, r, color=(1,0,0)):
     y.fill(p1.y)
     z = r * np.outer(np.sin(u), np.sin(u))
     #p1
-    mlab.mesh(p1.x + x, y, p1.z + z, color=color)
+    mlab.mesh(p1.x + x, y, p1.z + z, colormap=colormap)
     #p2
-    mlab.mesh(p2.x + x, l+y, p2.z + z, color=color)
+    mlab.mesh(p2.x + x, l+y, p2.z + z, colormap=colormap)
     
     #sides
     x = r * np.linspace(-1, 1, 40)
@@ -102,6 +139,6 @@ def draw_blood_vessel(p1, p2, r, color=(1,0,0)):
         row += dz
     for (row, dz ) in zip(neg_z, diffz):
         row += dz 
-    top = mlab.mesh(x,y,neg_z, color=color)
-    bottom = mlab.mesh(x,y,z, color=color)
+    top = mlab.mesh(x,y,neg_z, colormap=colormap)
+    bottom = mlab.mesh(x,y,z, colormap=colormap)
     return (top, bottom)

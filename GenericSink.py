@@ -17,6 +17,9 @@ class GenericSink(AbstractHost):
         if cluster is not None:
             assert(isinstance(cluster, AbstractBacteriaCellCluster))
             self.bacteriaClusters.append(cluster)
+    
+    def getChildren(self):
+        return None
 
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))

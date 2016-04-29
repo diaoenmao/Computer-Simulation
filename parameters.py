@@ -11,6 +11,7 @@ parameters.blood_vessel_file = '/data/data.csv'
 
 #Visualization parameters
 parameters.visualization_factor = 13
+parameters.refresh_interval = 1#s
 
 #Simulation parameters
 parameters.blood_density = 1.05e3 #kg/m^3
