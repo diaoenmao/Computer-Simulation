@@ -14,6 +14,7 @@ def timestep(o):
 	assert(o is not None)
 	assert(isinstance(o, AbstractHost))
 	children = o.getChildren()
+	o.timeStep()
 	if children is not None:
 		for child in children:
 			timestep(child)

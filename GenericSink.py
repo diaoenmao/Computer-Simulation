@@ -28,9 +28,8 @@ class GenericSink(AbstractHost):
         cluster.enterHost(self)
 
     def exitImmuneCellCluster(self):
-        assert False #detect bacteria
-        if False:
-            ...
+        assert False
+        #Put exited clusters in globals.terminalOutputEvent
         exited = 0
         while len(self.exitImmuneCellClusterEvent) > 0 and self.exitImmuneCellClusterEvent[0][0] <= globals.time:
             (time, cluster) = heappop(self.exitImmuneCellClusterEvent)
@@ -64,7 +63,6 @@ class GenericSink(AbstractHost):
         #calculate exit flow
         assert False
         #interations
-
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
@@ -82,6 +80,8 @@ class GenericSink(AbstractHost):
         return self.immuneCellClusters
 
     def exitBacteriaCluster(self):
+        assert False
+        #Put exited clusters in globals.terminalOutputEvent
         exited = 0
         while len(self.exitBacteriaClusterEvent) > 0 and self.exitBacteriaClusterEvent[0][0] <= globals.time:
             (time, cluster) = heappop(self.exitBacteriaClusterEvent)

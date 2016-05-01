@@ -1,6 +1,7 @@
 from AbstractCellCluster import * 
 from Point import *
 from sequences import bacteriaClusterSq
+import math
 
 class TestBacteriaCellCluster(AbstractCellCluster):
     def __init__(self, host):
@@ -25,6 +26,7 @@ class TestBacteriaCellCluster(AbstractCellCluster):
         return self.location
 
     def _reproduce(self): #private method
+        self.cellCount += int(math.ceil(self.cellCount * parameters.bacteria_reproduction_rate))
         return
 
     def death(self):

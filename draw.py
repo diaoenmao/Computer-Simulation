@@ -5,8 +5,7 @@ import numpy as np
 from Point import *
 from mayavi import mlab
 import threading
-
-showingFigure = False
+import globals as g
 
 def picker_callback(picker):
     global vessels, lastSelected, bound
@@ -34,11 +33,12 @@ def draw_body(nodes):
     assert(nodes is not None)
     global body_model
     global vessels
-    global figure
-    global showingFigure
+    global figure, colorGradient
 
     if 'vessels' not in globals():
         vessels = []
+    if 'colorGradient' not in globals():
+        colorGradient = parameters.color_gradient.split(',')
     if 'body_model' not in globals() or body_model is None:
         body_model = {'x': [], 'y': [], 'z': [], 'triangles': []}
         current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -72,37 +72,43 @@ def draw_body(nodes):
     figure.scene.disable_render = False
     picker = figure.on_mouse_pick(picker_callback)
     picker.tolerance = 0.01
-    global colors
-    colors = None
     anim()
 
 @mlab.show
 @mlab.animate(delay=parameters.refresh_interval * 1000)
 def anim():
-    global vessels, colors
-    print(len(vessels))
+    global vessels, colorGradient, timeText
+    timeText = None
     while True:
-        for (top, bottom, node) in vessels:
+        if timeText != None:
+            timeText.remove()            
+        timeText = mlab.text(0.01, 0.01, 'Time: ' + str(g.globals.time), width=0.3)
+        for (top, bottom, host) in vessels:
             lutT = top.module_manager.scalar_lut_manager.lut.table.to_array()
             lutB = bottom.module_manager.scalar_lut_manager.lut.table.to_array()
-            if colors is None:
-                colors = np.ones(np.shape(lutT[:, 0])) * 255
-                lutT[:,0] = colors
-                lutB[:,0] = colors
-            else:
-                lutT[:,0] = colors
-                lutB[:,0] = colors
-
-            lutT[:,1:3] = np.zeros(np.shape(lutT[:, 1:3]))
-            lutB[:,1:3] = np.zeros(np.shape(lutB[:, 1:3]))
+            count = host.getBacteriaCount()
+            colorNdx = int(float(count) / parameters.cell_count_color_mapping * (len(colorGradient) - 1))
+            if colorNdx >= len(colorGradient):
+                colorNdx = len(colorGradient) - 1
+            color = colorGradient[colorNdx]
+            assert len(color) == 6
+            ones = np.ones(np.shape(lutT[:, 0]))
+            R = int(color[0:2], 16)
+            G = int(color[2:4], 16)
+            B = int(color[4:6], 16)
+            #R
+            lutT[:,0] = ones * R
+            lutB[:,0] = ones * R
+            #G
+            lutT[:,1] = ones * G
+            lutB[:,1] = ones * G
+            #B
+            lutT[:,2] = ones * B
+            lutB[:,2] = ones * B            
             top.module_manager.scalar_lut_manager.lut.table = lutT
             bottom.module_manager.scalar_lut_manager.lut.table = lutB
         
         mlab.draw()        
-        colors = colors - 5
-        print(colors[0])
-        if colors[0] < 0:
-            colors = np.ones(np.shape(lutT[:, 0])) * 255
         print("updating graph")
         yield
 

@@ -193,7 +193,6 @@ class Organ(AbstractHost):
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
-        assert False
 
     def __repr__(self):
         return "Organ: " + self.name + "\n" \

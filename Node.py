@@ -77,7 +77,14 @@ class Node(AbstractHost):
         return self._velocity
 
     def getChildren(self): #return both nodes and organs
-        assert False
+        if not hasattr(self, '_sinks'):
+            return self.edges
+        
+        children = []
+        for edge in self.edges:
+            children.append(edge)
+        children.extend(self._sinks)
+        return children
 
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
@@ -95,6 +102,7 @@ class Node(AbstractHost):
         count = 0
         for cluster in self.immuneCellClusters:
             count += cluster.getCellCount()
+        return count
 
     def getBacteriaCount(self):
         count = 0
@@ -121,6 +129,7 @@ class Node(AbstractHost):
         cluster.enterHost(self)
 
     def setFlow(self, flow): #return actualFlow
+        assert(flow >= 0)
         if (self.residualVolume + flow) > self.volume:
             flow = self.volume - self.residualVolume
             self.residualVolume = self.volume
@@ -139,30 +148,26 @@ class Node(AbstractHost):
 
     def timeStep(self):
         assert(len(self.edges) > 0 or len(self._sinks) > 0)
-        hosts = [i for i in self.edges]
-        hosts.extend(self._sinks)
+        hosts = self.getChildren()
         flows = []
         actualFlow = 0
+        if len(hosts) == 0:
+            return
         for node in hosts:
-            node._velocity = self.radius / node.radius * self._velocity
-            deltaP = 0.5 * parameters.blood_density * (self._velocity ** 2 - node._velocity ** 2)
+            node_velocity = self.getFlowVelocity()
+            deltaP = 0.5 * parameters.blood_density * abs(self._velocity ** 2 - node_velocity ** 2)
             flowRate = deltaP / self._resistance
             flow = flowRate * parameters.delta_t
-            if flow > self.volume:
-                if not globals.printed_lowering_delta_t_message:
-                    print('******Please consider lowering delta_t.******')
-                    globals.printed_lowering_delta_t_message = True
-                flow = self.volume
             flows.append(flow)
-        if sum(flows) > self.volume:
+        if sum(flows) > self.residualVolume:
             if not globals.printed_lowering_delta_t_message:
                 print('******Please consider lowering delta_t.******')
                 globals.printed_lowering_delta_t_message = True
-            factor = self.volume / sum(flows)
+            factor = self.residualVolume / sum(flows)
             flows = [float(i) * factor for i in flows ]
 
 
-        for flow, host in zip(flows, self.hosts):
+        for flow, host in zip(flows, hosts):
             flow = host.setFlow(flow)
             actualFlow += flow
 
@@ -201,9 +206,8 @@ class Node(AbstractHost):
 
         for cluster in clustersLeft:
             self.exitImmuneCellCluster(cluster)
-        
         self.residualVolume -= actualFlow
-        assert(self.residualVolume >= 0)
+        assert(self.residualVolume >= 0 and self.residualVolume <= self.volume)
 
     def __repr__(self):
         return "Node: " + self.name + "\n" \
