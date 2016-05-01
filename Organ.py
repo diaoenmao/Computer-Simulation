@@ -1,4 +1,5 @@
 from Node import *
+from Container import *
 from AbstractHost import *
 import numpy as np
 from globals import globals
@@ -6,15 +7,15 @@ from parameters import *
 
 class Organ(AbstractHost):
     #retention rate.
-    def __init__(self, name, id, coverage, sideLength, length, health=100):
+    def __init__(self, name, id, mass, sideLength, length, start_points, end_points, health=100):
         self.name = name
         self.id = id
-        self.length = length
-        self.coverage = coverage
-        if converge is not None:
-            for node in converge:
-                assert(isinstance(node, Node))
+        self.mass = mass
         self.sideLength = sideLength
+        self.length = length
+        self.start_points = start_points
+        self.end_points = end_points
+        self.parents = []
         self.health = health
         self.bacteriaClusters = []
         self.immuneCellClusters = []
@@ -49,9 +50,31 @@ class Organ(AbstractHost):
         heappush(self._flowEvent, (globals.time + int(self.length / (self.getFlowVelocity() * parameters.delta_t)), flow))
         return flow
 
-    def setParent(self, parent): #may be used to calculate this velocity
-        self.parent = parent
+    def setParent(self, parents): #may be used to calculate this velocity
+        self.parents = parents
 
+    def addParent(self, parent):
+        assert(isinstance(parent, Node))
+        self.parents.append(parent)
+
+    def addStart(self, start_point):
+        assert(isinstance(start_point, Point))
+        self.start_points.append(start_point)
+
+    def addEnd(self, end_point):
+        assert(isinstance(start_point, Point))
+        self.end_points.append(end_point)
+
+    def getChildren(self): #return both nodes and organs
+        if not hasattr(self, '_sinks'):
+            return self.edges
+        
+        children = []
+        for edge in self.edges:
+            children.append(edge)
+        children.extend(self._sinks)
+        return children
+        
     def getFlowVelocity(self):
         return parameters.sink_velocity
 
@@ -203,7 +226,7 @@ class Organ(AbstractHost):
 
     def __repr__(self):
         return "Organ: " + self.name + "\n" \
-            + "    id: " + str(self.id) + " coverage: " + str(self.coverage) + " \n" \
+            + "    id: " + str(self.id) + " mass: " + str(self.mass) + " \n" \
             + "    length: " + self.length + "\n" \
             + "    side length: " + self.sideLength + "\n" \
             + "    health: " + self.health + "\n" \

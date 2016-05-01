@@ -40,7 +40,8 @@ def simulate():
 		globals.time += 1
 
 blood_vessels = initialize.processInput(parameters.blood_vessel_file)
-objects = initialize.buildGraph(blood_vessels)
+organs = initialize.processInput(parameters.organ_file)
+objects = initialize.buildGraph(blood_vessels, organs)
 
 #insert bacteria clusters
 for id, cluster in parameters.bacteria_t0.items():

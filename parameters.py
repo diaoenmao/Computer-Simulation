@@ -8,6 +8,7 @@ parameters = Parameter()
 #import file
 parameters.body_mesh_file = '/data/body_mesh.obj'
 parameters.blood_vessel_file = '/data/data.csv'
+parameters.organ_file = '/data/organ.csv'
 
 #Visualization parameters
 parameters.visualization_factor = 13
@@ -40,7 +41,7 @@ parameters.vein_travel_time = 20 #? s
 parameters.bacteria_colony_max_cells = 1e9
 parameters.bacteria_colony_max_radius = 0.01 #m
 parameters.bacteria_colony_depth = 0.001 #m
-parameters.organ_grid_resolution = 1e-4 #m
+parameters.organ_grid_resolution = 0.01 #m
 
 #Time parameters
 parameters.delta_t = 1 #s

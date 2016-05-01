@@ -11,6 +11,7 @@ class TestBacteriaCellCluster(AbstractCellCluster):
         self.location = None
         self.host = None
         self.cellCount = cellCount
+        self.lifespan = parameters.bacteria_lifespan
 
     def getCellcount(self):
         return int(self.cellCount)
