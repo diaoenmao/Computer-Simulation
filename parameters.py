@@ -21,6 +21,7 @@ F0A100,F0A500,EFAA00,EFAE00,EEB200,EEB600,EEBA00,EDBE00,EDC200,\
 EDC600,ECCA00,ECCE00,ECD200,EBD600,EBDA00,EADE00,EAE200,EAE600,\
 E9EA00,E9EE00,E9F200,E8F600,E8FA00,E8FF00"
 parameters.cell_count_color_mapping = 1e8
+parameters.cell_count_history_interval = 100 #collect cell count every x time intervals
 
 #Simulation parameters
 parameters.blood_density = 1.05e3 #kg/m^3

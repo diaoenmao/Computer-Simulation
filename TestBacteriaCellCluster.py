@@ -11,9 +11,9 @@ class TestBacteriaCellCluster(AbstractCellCluster):
         self.location = None
         self.host = None
         self.cellCount = cellCount
-        
+
     def getCellcount(self):
-        return self.cellCount
+        return int(self.cellCount)
 
     def getName(self):
         return self.name
@@ -26,8 +26,7 @@ class TestBacteriaCellCluster(AbstractCellCluster):
         return self.location
 
     def _reproduce(self): #private method
-        self.cellCount += int(math.ceil(self.cellCount * parameters.bacteria_reproduction_rate))
-        return
+        self.cellCount += math.ceil(self.cellCount * parameters.bacteria_reproduction_rate)
 
     def death(self):
         self.isDead = True

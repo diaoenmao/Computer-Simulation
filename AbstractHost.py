@@ -1,6 +1,11 @@
 from abc import *
 
 class AbstractHost(metaclass=ABCMeta):
+
+    @abstractmethod
+    def getCellCountHistory(self):
+        ...
+
     @abstractmethod
     def setFlow(self, flow): #return actualFlow
         ...

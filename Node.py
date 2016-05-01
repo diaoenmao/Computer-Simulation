@@ -41,6 +41,10 @@ class Node(AbstractHost):
         self.volume = self.radius ** 2 * math.pi * self.length
         self.residualVolume = 0
         self.parent = None
+        self.bacteriaCountHistory = []
+
+    def getCellCountHistory(self):
+        return self.bacteriaCountHistory
 
     def setTail(self, isTail):
         self._tail = isTail
@@ -208,7 +212,8 @@ class Node(AbstractHost):
             self.exitImmuneCellCluster(cluster)
         self.residualVolume -= actualFlow
         assert(self.residualVolume >= 0 and self.residualVolume <= self.volume)
-
+        self.bacteriaCountHistory.append(self.getBacteriaCount())
+        
     def __repr__(self):
         return "Node: " + self.name + "\n" \
             + "    id: " + str(self.id) + " length: " + "{:.2f}".format(self.length) + " \n" \

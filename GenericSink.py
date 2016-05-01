@@ -17,6 +17,10 @@ class GenericSink(AbstractHost):
         if cluster is not None:
             assert(isinstance(cluster, AbstractBacteriaCellCluster))
             self.bacteriaClusters.append(cluster)
+        self.bacteriaCountHistory = []
+
+    def getCellCountHistory(self):
+        return self.bacteriaCountHistory    
     
     def getChildren(self):
         return None
@@ -66,6 +70,7 @@ class GenericSink(AbstractHost):
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
+        self.bacteriaCountHistory.append(self.getBacteriaCount())
 
     def getBacteriaCount(self):
         count = 0
