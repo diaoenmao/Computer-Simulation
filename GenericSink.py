@@ -70,7 +70,8 @@ class GenericSink(AbstractHost):
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
-        self.bacteriaCountHistory.append(self.getBacteriaCount())
+        if globals.time % parameters.cell_count_history_interval == 0:
+            self.bacteriaCountHistory.append(self.getBacteriaCount())
 
     def getBacteriaCount(self):
         count = 0

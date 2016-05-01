@@ -155,8 +155,7 @@ class Node(AbstractHost):
         hosts = self.getChildren()
         flows = []
         actualFlow = 0
-        if len(hosts) == 0:
-            return
+
         for node in hosts:
             node_velocity = self.getFlowVelocity()
             deltaP = 0.5 * parameters.blood_density * abs(self._velocity ** 2 - node_velocity ** 2)
@@ -212,7 +211,8 @@ class Node(AbstractHost):
             self.exitImmuneCellCluster(cluster)
         self.residualVolume -= actualFlow
         assert(self.residualVolume >= 0 and self.residualVolume <= self.volume)
-        self.bacteriaCountHistory.append(self.getBacteriaCount())
+        if globals.time % parameters.cell_count_history_interval == 0:
+            self.bacteriaCountHistory.append(self.getBacteriaCount())
         
     def __repr__(self):
         return "Node: " + self.name + "\n" \

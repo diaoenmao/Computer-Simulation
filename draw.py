@@ -2,13 +2,15 @@ from parameters import parameters
 import os
 import re
 import numpy as np
+import matplotlib.pyplot as plt
 from Point import *
 from mayavi import mlab
 import threading
 import globals as g
+import copy
 
 def picker_callback(picker):
-    global vessels, lastSelected, bound
+    global vessels, lastSelected, bound, showingNode
     if 'lastSelected' not in globals():
         lastSelected = None
     if 'bound' not in globals():
@@ -26,6 +28,17 @@ def picker_callback(picker):
             tBound = mlab.outline(top)
             bBound = mlab.outline(bottom)
             bound = (tBound, bBound)
+
+            plt.clf()
+            history = copy.deepcopy(node.getCellCountHistory())
+            x = np.linspace(0, len(history) * parameters.cell_count_history_interval, len(history))
+            y = history
+            plt.plot(x, y, 'r')
+            if showingNode is None:
+                plt.show()
+
+            showingNode = node
+
             break
             
 
@@ -33,7 +46,7 @@ def draw_body(nodes):
     assert(nodes is not None)
     global body_model
     global vessels
-    global figure, colorGradient
+    global figure, colorGradient, showingFigure, showingNode
 
     if 'vessels' not in globals():
         vessels = []
@@ -72,12 +85,16 @@ def draw_body(nodes):
     figure.scene.disable_render = False
     picker = figure.on_mouse_pick(picker_callback)
     picker.tolerance = 0.01
+    
+    plt.ion()
+    showingNode = None
+    mlab.view(0,0)
     anim()
 
 @mlab.show
 @mlab.animate(delay=parameters.refresh_interval * 1000)
 def anim():
-    global vessels, colorGradient, timeText
+    global vessels, colorGradient, timeText, showingNode
     timeText = None
     while True:
         if timeText != None:
@@ -108,6 +125,13 @@ def anim():
             top.module_manager.scalar_lut_manager.lut.table = lutT
             bottom.module_manager.scalar_lut_manager.lut.table = lutB
         
+        if showingNode is not None:
+            plt.clf()
+            history = copy.deepcopy(showingNode.getCellCountHistory())
+            x = np.linspace(0, len(history) * parameters.cell_count_history_interval, len(history))
+            y = history
+            plt.plot(x, y, 'r')
+
         mlab.draw()        
         print("updating graph")
         yield

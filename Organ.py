@@ -29,6 +29,11 @@ class Organ(AbstractHost):
         self.volume = sideLength ** 2 * length
         self.residualVolume = 0
         self._flowEvent = []
+        self.bacteriaCountHistory = []
+
+    def getCellCountHistory(self):
+        return self.bacteriaCountHistory
+
     def setHealth(self, heath):
         self.heath = heath
     
@@ -193,6 +198,8 @@ class Organ(AbstractHost):
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
+        if globals.time % parameters.cell_count_history_interval == 0:
+            self.bacteriaCountHistory.append(self.getBacteriaCount())
 
     def __repr__(self):
         return "Organ: " + self.name + "\n" \
