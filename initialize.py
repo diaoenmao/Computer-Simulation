@@ -94,12 +94,11 @@ def buildGraph(blood_vessels, organs_in):
             _from = [ int(numeric_string) for numeric_string in row[4].split(',') ]
         else:
             _from = [ int(numeric_string) for numeric_string in row[4] ]
-        sideLength = volume ** (1 / float(3))
-        print(sideLength)
-        length = volume ** (1 / float(3))
+        sideLength = volume ** (1 / float(3))/100#cm to m
+        length = volume ** (1 / float(3))/100
         start_points = []
         end_points = []
-        organ = Organ(name, id, length, mass, sideLength, length, start_points, end_points)
+        organ = Organ(name, id, mass, sideLength, length, start_points, end_points)
         organs.append(organ)    
     
     #Make node connections with organs.     

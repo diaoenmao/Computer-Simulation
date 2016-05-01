@@ -19,12 +19,16 @@ class Organ(AbstractHost):
         self.health = health
         self.bacteriaClusters = []
         self.immuneCellClusters = []
-        self._sideLengthBoxes = round((sideLength + 0.5) / parameters.organ_grid_resolution)
-        self._lengthBoxes = round((length + 0.5 ) / parameters.organ_grid_resolution)
-        self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes), dtype=Container)
-        xs = np.random(0, self._sideLengthBoxes, 2)
-        zs = np.random(0, self._sideLengthBoxes, 2)
-        ys = np.random(0, self._lengthBoxes, 2)
+        self._sideLengthBoxes = round(0.5+((sideLength) / parameters.organ_grid_resolution))
+        self._lengthBoxes = round(0.5+((length) / parameters.organ_grid_resolution))
+        print(self._sideLengthBoxes)
+        self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes),dtype=Container)
+        #for index,container in np.ndenumerate(self._grid):
+        #    container = Container()
+        #    print(index)
+        xs = np.random.uniform(0, self._sideLengthBoxes, 2)
+        zs = np.random.uniform(0, self._sideLengthBoxes, 2)
+        ys = np.random.uniform(0, self._lengthBoxes, 2)
         self._grid_entrance = Point(int(xs[0]), int(ys[0]), int(zs[0]))
         self._grid_exit = Point(int(xs[1]), int(ys[1]), int(zs[1]))
         self.volume = sideLength ** 2 * length

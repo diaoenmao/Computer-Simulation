@@ -41,7 +41,7 @@ parameters.vein_travel_time = 20 #? s
 parameters.bacteria_colony_max_cells = 1e9
 parameters.bacteria_colony_max_radius = 0.01 #m
 parameters.bacteria_colony_depth = 0.001 #m
-parameters.organ_grid_resolution = 0.01 #m
+parameters.organ_grid_resolution = 1e-4 #m
 
 #Time parameters
 parameters.delta_t = 1 #s
