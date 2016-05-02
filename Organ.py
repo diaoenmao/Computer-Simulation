@@ -1,13 +1,14 @@
-from Node import *
+from Point import *
 from Container import *
 from AbstractHost import *
+from Node import *
 import numpy as np
 from globals import globals
 from parameters import *
 
 class Organ(AbstractHost):
     #retention rate.
-    def __init__(self, name, id, mass, sideLength, length, start_points, end_points, health=100):
+    def __init__(self, name, id, mass, sideLength, length, _from, start_points, end_points, health=100):
         self.name = name
         self.id = id
         self.mass = mass
@@ -19,13 +20,10 @@ class Organ(AbstractHost):
         self.health = health
         self.bacteriaClusters = []
         self.immuneCellClusters = []
+        self._from = _from
         self._sideLengthBoxes = round(0.5+((sideLength) / parameters.organ_grid_resolution))
         self._lengthBoxes = round(0.5+((length) / parameters.organ_grid_resolution))
-        print(self._sideLengthBoxes)
-        self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes),dtype=Container)
-        #for index,container in np.ndenumerate(self._grid):
-        #    container = Container()
-        #    print(index)
+        self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes), dtype=Container)
         xs = np.random.uniform(0, self._sideLengthBoxes, 2)
         zs = np.random.uniform(0, self._sideLengthBoxes, 2)
         ys = np.random.uniform(0, self._lengthBoxes, 2)

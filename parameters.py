@@ -5,6 +5,9 @@ class Parameter:
 
 parameters = Parameter()
 
+#debug
+parameters.verbose = True
+
 #import file
 parameters.body_mesh_file = '/data/body_mesh.obj'
 parameters.blood_vessel_file = '/data/data.csv'

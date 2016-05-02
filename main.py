@@ -20,6 +20,7 @@ def timestep(o):
 			timestep(child)
 
 def simulate():
+	print("Starting simulation")
 	while(True):
 		assert(objects[0].id == 1)
 		head = objects[0]
@@ -37,8 +38,11 @@ def simulate():
 		actualFlow = head.setFlow(flow)
 		oscillator.setlastVolume(actualFlow)
 		timestep(head)
+
+		sleep(0.01)
 		globals.time += 1
 
+print("starting setup")
 blood_vessels = initialize.processInput(parameters.blood_vessel_file)
 organs = initialize.processInput(parameters.organ_file)
 objects = initialize.buildGraph(blood_vessels, organs)

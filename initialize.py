@@ -4,6 +4,7 @@ import math
 from parameters import parameters
 from Node import *
 from Point import *
+from Organ import *
 
 #Process the input file and return the rows of split data.
 def processInput(inputFile):
@@ -39,6 +40,8 @@ def setStartEndOrgans(organ):
 def buildGraph(blood_vessels, organs_in):
     nodes = []
     organs = []
+    if parameters.verbose:      
+        print("Building blood vessels")
     for row in blood_vessels:
         assert(len(row) == 13)
         name = row[0]
@@ -84,6 +87,8 @@ def buildGraph(blood_vessels, organs_in):
     
     setStartEndNodes(start_node)
     
+    if parameters.verbose:      
+        print("Building organs")
     for row in organs_in:
         assert(len(row) == 7)
         name = row[0]
@@ -98,18 +103,20 @@ def buildGraph(blood_vessels, organs_in):
         length = volume ** (1 / float(3))/100
         start_points = []
         end_points = []
-        organ = Organ(name, id, mass, sideLength, length, start_points, end_points)
+        organ = Organ(name, id, mass, sideLength, length, _from, start_points, end_points)
         organs.append(organ)    
-    
+
+    if parameters.verbose:      
+        print("Finalizing")  
     #Make node connections with organs.     
     organs = sorted(organs, key=lambda node: node.id)
     start_node = None
     for organ in organs:
         for j in organ._from:
             if(j>0):
-                nodes[j-1].addEdge(organ)
+                nodes[j-1].addOrgan(organ)
                 organ.addParent(nodes[j-1])
         #Try to figure out start and end
-        setStartEndOrgans(organ)
-
+    
+    setStartEndOrgans(organ)
     return nodes

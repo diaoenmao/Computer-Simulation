@@ -2,9 +2,9 @@ from parameters import parameters
 import os
 import re
 import numpy as np
-import matplotlib.pyplot as plt
 from Point import *
 from mayavi import mlab
+import matplotlib.pyplot as plt
 import threading
 import globals as g
 import copy
@@ -132,8 +132,9 @@ def anim():
             y = history
             plt.plot(x, y, 'r')
 
-        mlab.draw()        
-        print("updating graph")
+        mlab.draw()
+        if parameters.verbose:      
+            print("updating graph")
         yield
 
 def draw_blood_vessel(p1, p2, r, colormap='Reds'):
