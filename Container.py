@@ -3,26 +3,26 @@ class Container:
         self.bacteriaClusters = []
         self.immuneCellClusters = [] 
     
-    def getBacteriaClusters():
+    def getBacteriaClusters(self):
         return self.bacteriaClusters
     
-    def getBacteriaClustersConcentration():
+    def getBacteriaClustersConcentration(self):
         return len(self.bacteriaClusters)
         
-    def addBacteriaCluster(cluster):
+    def addBacteriaCluster(self, cluster):
         self.bacteriaClusters.append(cluster)
     
-    def removeBacteriaCluster(cluster):
+    def removeBacteriaCluster(self, cluster):
         self.bacteriaClusters.remove(cluster)
         
-    def getImmuneCellClusters():
+    def getImmuneCellClusters(self):
         return self.immuneCellClusters
         
-    def getImmuneCellClustersConcentration():
+    def getImmuneCellClustersConcentration(self):
         return len(self.immuneCellClusters)
         
-    def addImmuneCellCluster(cluster):
+    def addImmuneCellCluster(self, cluster):
         self.immuneCellClusters.append(cluster)
 
-    def removeImmuneCellCluster(cluster):
+    def removeImmuneCellCluster(self, cluster):
         self.immuneCellClusters.remove(cluster)

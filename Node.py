@@ -1,5 +1,5 @@
 from Point import *
-from Organ import *
+from Organ import Organ
 from AbstractHost import *
 from AbstractBacteriaCellCluster import *
 from AbstractImmuneCellCluster import *
@@ -31,9 +31,11 @@ class Node(AbstractHost):
         self.bacteriaClusters = []
         self.edges = []
         self._resistance = (8 * self.length * parameters.viscosity) / (math.pi * (self.radius) ** 4 )
+        self._sinks = []
         if  self._to == [0]:
             self.setTail(True)
-
+        else:
+            self.setTail(False)
         if self.id == 1: #ascending aorta
             self._velocity = parameters.ejection_velocity
         else:
@@ -48,14 +50,12 @@ class Node(AbstractHost):
 
     def setTail(self, isTail):
         self._tail = isTail
-        if not self._tail and hasattr(self, '_sinks'):
-            del self._sinks
-        if self._tail and not hasattr(self, '_sinks'):
-            self._sinks = []
+        if self._tail and len(self._sinks) == 0:
             genericSink = GenericSink("Sink for Node id: " + str(self.id) + ", " + self.name, None)
             cNaught = (self.youngs_modulus * self.wall_thickness / (2 * parameters.blood_density * self.radius)) ** 0.5
             zNaught = parameters.blood_density * cNaught / (1 - parameters.poission_ratio) ** 0.5 
             self._resistance += zNaught * (1 + parameters.nominal_reflection_coefficient) / (1 - parameters.nominal_reflection_coefficient)
+            self._sinks.append(genericSink)
 
     def isTail(self):
         return self._tail
@@ -73,15 +73,16 @@ class Node(AbstractHost):
         self.end = end
 
     def addOrgan(self, organ):
-        assert(self._tail)
         assert(isinstance(organ, Organ))
+        if len(self._sinks) == 1 and isinstance(self._sinks[0], GenericSink):
+            self._sinks = []
         self._sinks.append(organ)
 
     def getFlowVelocity(self):
         return self._velocity
 
     def getChildren(self): #return both nodes and organs
-        if not hasattr(self, '_sinks'):
+        if len(self._sinks) == 0:
             return self.edges
         
         children = []

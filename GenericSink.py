@@ -12,6 +12,7 @@ class GenericSink(AbstractHost):
         self.id = bacteriaClusterSq.getNextVal()
         self.exitBacteriaClusterEvent = []
         self.exitImmuneCellClusterEvent = []
+        self.flowEvent = []
         self.immuneCellClusters = []
         self.bacteriaClusters = []
         if cluster is not None:
@@ -32,7 +33,6 @@ class GenericSink(AbstractHost):
         cluster.enterHost(self)
 
     def exitImmuneCellCluster(self):
-        assert False
         #Put exited clusters in globals.terminalOutputEvent
         exited = 0
         while len(self.exitImmuneCellClusterEvent) > 0 and self.exitImmuneCellClusterEvent[0][0] <= globals.time:
@@ -42,6 +42,7 @@ class GenericSink(AbstractHost):
             else:
                 self.immuneCellClusters.remove(cluster)
                 exited += cluster.getCellCount()
+                heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
         return exited
 
     def getImmuneCellCount(self):
@@ -64,9 +65,6 @@ class GenericSink(AbstractHost):
         for cluster in self.immuneCellClusters:
             cluster.timeStep(self)
 
-        #calculate exit flow
-        assert False
-        #interations
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
@@ -86,7 +84,6 @@ class GenericSink(AbstractHost):
         return self.immuneCellClusters
 
     def exitBacteriaCluster(self):
-        assert False
         #Put exited clusters in globals.terminalOutputEvent
         exited = 0
         while len(self.exitBacteriaClusterEvent) > 0 and self.exitBacteriaClusterEvent[0][0] <= globals.time:
@@ -96,10 +93,10 @@ class GenericSink(AbstractHost):
             else:
                 self.bacteriaClusters.remove(cluster)
                 exited += cluster.getCellCount()
+                heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
         return exited
 
     def setFlow(self, flow): #return actualFlow
-        assert False
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity

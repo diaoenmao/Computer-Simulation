@@ -38,13 +38,13 @@ parameters.qrs_interval = 0.1 #s
 parameters.ejection_velocity = 0.4 #m/s
 parameters.sink_velocity = 3e-4 #m/s
 parameters.nominal_reflection_coefficient = 0.8
-parameters.sink_travel_time = 10 #? s
-parameters.vein_travel_time = 20 #? s
+parameters.sink_travel_time = 10 #? time intervals
+parameters.vein_travel_time = 20 #? time intervals
 
 parameters.bacteria_colony_max_cells = 1e9
 parameters.bacteria_colony_max_radius = 0.01 #m
 parameters.bacteria_colony_depth = 0.001 #m
-parameters.organ_grid_resolution = 1e-4 #m
+parameters.organ_grid_resolution = 1e-3 #m
 
 #Time parameters
 parameters.delta_t = 1 #s

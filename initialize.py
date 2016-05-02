@@ -2,7 +2,7 @@ import csv
 import os
 import math
 from parameters import parameters
-from Node import *
+import Node
 from Point import *
 from Organ import *
 
@@ -70,7 +70,7 @@ def buildGraph(blood_vessels, organs_in):
         else:
             p1 = Point(0,0,0)
             p2 = Point(0,0,0)
-        node = Node(name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, yaw, pitch, p1, p2)
+        node = Node.Node(name, id, length, radius, wall_thickness, youngs_modulus, f0, _from, _to, yaw, pitch, p1, p2)
         nodes.append(node)
     
     #Make node connections with its children.    
@@ -99,8 +99,8 @@ def buildGraph(blood_vessels, organs_in):
             _from = [ int(numeric_string) for numeric_string in row[4].split(',') ]
         else:
             _from = [ int(numeric_string) for numeric_string in row[4] ]
-        sideLength = volume ** (1 / float(3))/100#cm to m
-        length = volume ** (1 / float(3))/100
+        sideLength = volume ** (1 / float(3)) / 100#cm to m
+        length = volume ** (1 / float(3)) / 100
         start_points = []
         end_points = []
         organ = Organ(name, id, mass, sideLength, length, _from, start_points, end_points)

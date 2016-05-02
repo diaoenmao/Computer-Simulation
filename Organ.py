@@ -1,10 +1,11 @@
 from Point import *
 from Container import *
 from AbstractHost import *
-from Node import *
+import Node
 import numpy as np
 from globals import globals
 from parameters import *
+from heapq import heappush, heappop
 
 class Organ(AbstractHost):
     #retention rate.
@@ -24,6 +25,10 @@ class Organ(AbstractHost):
         self._sideLengthBoxes = round(0.5+((sideLength) / parameters.organ_grid_resolution))
         self._lengthBoxes = round(0.5+((length) / parameters.organ_grid_resolution))
         self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes), dtype=Container)
+        for i in range(self._sideLengthBoxes):
+            for j in range(self._sideLengthBoxes):
+                for k in range(self._lengthBoxes):
+                    self._grid[i][j][k] = Container()
         xs = np.random.uniform(0, self._sideLengthBoxes, 2)
         zs = np.random.uniform(0, self._sideLengthBoxes, 2)
         ys = np.random.uniform(0, self._lengthBoxes, 2)
@@ -56,7 +61,7 @@ class Organ(AbstractHost):
         self.parents = parents
 
     def addParent(self, parent):
-        assert(isinstance(parent, Node))
+        assert(isinstance(parent, Node.Node))
         self.parents.append(parent)
 
     def addStart(self, start_point):
@@ -64,18 +69,11 @@ class Organ(AbstractHost):
         self.start_points.append(start_point)
 
     def addEnd(self, end_point):
-        assert(isinstance(start_point, Point))
+        assert(isinstance(end_point, Point))
         self.end_points.append(end_point)
 
     def getChildren(self): #return both nodes and organs
-        if not hasattr(self, '_sinks'):
-            return self.edges
-        
-        children = []
-        for edge in self.edges:
-            children.append(edge)
-        children.extend(self._sinks)
-        return children
+        return None
         
     def getFlowVelocity(self):
         return parameters.sink_velocity
@@ -141,21 +139,21 @@ class Organ(AbstractHost):
                 self.bacteriaClusters.remove(cluster)
                 
     def interact(self):
-        if not self.bacteriaClusters:
-            for bacteriaCluster1 in bacteriaClusters:
+        if self.bacteriaClusters:
+            for bacteriaCluster1 in self.bacteriaClusters:
                 for bacteriaCluster2 in bacteriaClusters:
                     if(bacteriaCluster1.getRelativeLocation()==bacteriaCluster2.getRelativeLocation()):
                         bacteriaCluster1.inContact(bacteriaCluster2)
                         bacteriaCluster2.inContact(bacteriaCluster1)
-        if not self.immuneCellClusters:
-            for immuneCellCluster1 in immuneCellClusters:
+        if self.immuneCellClusters:
+            for immuneCellCluster1 in self.immuneCellClusters:
                 for immuneCellCluster2 in immuneCellClusters:
                     if(immuneCellCluster1.getRelativeLocation()==immuneCellCluster2.getRelativeLocation()):
                         immuneCellCluster1.inContact(immuneCellCluster2)
                         immuneCellCluster2.inContact(immuneCellCluster1)
-        if not self.bacteriaClusters and not self.immuneCellClusters:
-            for bacteriaCluster in bacteriaClusters:
-                for immuneCellCluster in immuneCellClusters:
+        if self.bacteriaClusters and self.immuneCellClusters:
+            for bacteriaCluster in self.bacteriaClusters:
+                for immuneCellCluster in self.immuneCellClusters:
                     if(bacteriaCluster.getRelativeLocation()==immuneCellCluster.getRelativeLocation()):
                         bacteriaCluster.inContact(cluster)
                         immuneCellCluster.inContact(bacteriaCluster)
