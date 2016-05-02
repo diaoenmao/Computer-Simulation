@@ -103,9 +103,7 @@ class Organ(AbstractHost):
 
     def getImmuneCellCount(self):
         cellCount = 0
-        if self.converge is None:
-            return cellCount
-        for cluster in self.immuneCellClusters:
+        for node in self.immuneCellClusters:
             cellCount += node.cellCount()
         return cellCount
         
