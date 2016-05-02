@@ -58,6 +58,9 @@ class GenericSink(AbstractHost):
         cluster.enterHost(self)
 
     def timeStep(self):
+        if globals.time % parameters.cell_count_history_interval == 0:
+            self.bacteriaCountHistory.append(self.getBacteriaCount())
+
         #Grow bacteria
         for cluster in self.bacteriaClusters:
             cluster.timeStep()
@@ -69,8 +72,6 @@ class GenericSink(AbstractHost):
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
-        if globals.time % parameters.cell_count_history_interval == 0:
-            self.bacteriaCountHistory.append(self.getBacteriaCount())
 
     def getBacteriaCount(self):
         count = 0

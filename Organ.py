@@ -23,17 +23,18 @@ class Organ(AbstractHost):
         self.bacteriaClusters = []
         self.immuneCellClusters = []
         self._from = _from
-        self._sideLengthBoxes = round(0.5+((sideLength) / parameters.organ_grid_resolution))
-        self._lengthBoxes = round(0.5+((length) / parameters.organ_grid_resolution))
+        self._sideLengthBoxes = round(0.5+(float(sideLength) / parameters.organ_grid_resolution))
+        self._lengthBoxes = round(0.5+(float(length) / parameters.organ_grid_resolution))
         self._grid = np.empty((self._sideLengthBoxes, self._sideLengthBoxes, self._lengthBoxes), dtype=Container)
         for i in range(self._sideLengthBoxes):
             for j in range(self._sideLengthBoxes):
                 for k in range(self._lengthBoxes):
                     self._grid[i][j][k] = Container()
         xs = np.random.uniform(0, self._sideLengthBoxes, 2)
-        zs = np.random.uniform(0, self._sideLengthBoxes, 2)
-        ys = np.random.uniform(0, self._lengthBoxes, 2)
+        ys = np.random.uniform(0, self._sideLengthBoxes, 2)
+        zs = np.random.uniform(0, self._lengthBoxes, 2)
         self._grid_entrance = Point(int(xs[0]), int(ys[0]), int(zs[0]))
+
         self._grid_exit = Point(int(xs[1]), int(ys[1]), int(zs[1]))
         self.volume = sideLength ** 2 * length
         self.residualVolume = 0
@@ -99,6 +100,8 @@ class Organ(AbstractHost):
                 #exit
                 cluster.exitHost()
                 self.immuneCellClusters.remove(cluster)
+                self._grid[self._grid_exit.x][self._grid_exit.y][self._grid_exit.z].removeBacteriaCluster(cluster)
+                heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
 
     def getImmuneCellCount(self):
         cellCount = 0
@@ -137,7 +140,9 @@ class Organ(AbstractHost):
             if point == self._grid_exit:
                 #exit
                 cluster.exitHost()
+                self._grid[self._grid_exit.x][self._grid_exit.y][self._grid_exit.z].removeBacteriaCluster(cluster)
                 self.bacteriaClusters.remove(cluster)
+                heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
                 
     def interact(self):
         if self.bacteriaClusters:
@@ -160,45 +165,68 @@ class Organ(AbstractHost):
                         immuneCellCluster.inContact(bacteriaCluster)
 
     def moveClusters(self):
+        print(self.bacteriaClusters)
         for bacteriaCluster in self.bacteriaClusters:
             index = bacteriaCluster.getRelativeLocation()
-            move_range = int(bacteriaCluster.getMoveSpeed() / parameters.organ_grid_resolution)
+            assert index is not None
+            move_range = max(int(bacteriaCluster.getMoveSpeed() / parameters.organ_grid_resolution), 1)
             concentration = []
             for i in range(-move_range,move_range+1):
+                if int(index.x + i) < 0 or int(index.x + i) >= len(self._grid):
+                    continue
                 for j in range(-move_range,move_range+1):
+                    if int(index.y + j) < 0 or int(index.y + j) >= len(self._grid[0]):
+                        continue
                     for k in range(-move_range,move_range+1):
-                        concentration.append(self._grid[index.x + i][index.y + j][index.z + k].getBacteriaClustersConcentration())
-            min_concentration_index = concentration.index(min(concentration))
-            side = 2 * move_range + 1
-            new_x = int(min_concentration_index / side ** 2)
-            temp  = min_concentration_index % side**2
-            new_y = int(temp / side)
-            new_z = temp % side
-            if(i != new_x and y != new_y and z != new_z):
-                self._grid[index.x + i][index.y + j][index.z + k].removeBacteriaCluster(bacteriaCluster)
+                        if int(index.z + k) < 0 or int(index.z + k) >= len(self._grid[0][0]):
+                            continue
+                        concentration.append((self._grid[index.x + i][index.y + j][index.z + k].getBacteriaClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
+            
+            if len(concentration) == 0:
+                print(len(self._grid))
+                print(index)
+            print(len(self._grid))
+            print(index)
+            concentration, loc = min(concentration)
+            (new_x, new_y, new_z) = loc
+            assert new_x >= 0 and new_x < len(self._grid)
+            assert new_y >= 0 and new_y < len(self._grid[0])
+            assert new_z >= 0 and new_z < len(self._grid[0][0])
+
+            if(index.x != new_x or index.y != new_y or index.z != new_z):
+                self._grid[index.x][index.y][index.z].removeBacteriaCluster(bacteriaCluster)
                 self._grid[new_x][new_y][new_z].addBacteriaCluster(bacteriaCluster)
                 bacteriaCluster.setRelativeLocation(Point(new_x, new_y, new_z))
 
         for immuneCellCluster in self.immuneCellClusters:
             index = immuneCellCluster.getRelativeLocation()
-            move_range = int(immuneCellCluster.getMoveSpeed()/parameters.organ_grid_resolution)
+            move_range = max(int(immuneCellCluster.getMoveSpeed() / parameters.organ_grid_resolution), 1)
             concentration = []
-            for i in range(-move_range,move_range+1):
-                for j in range(-move_range,move_range+1):
-                    for k in range(-move_range,move_range+1):
-                        concentration.append(self._grid[index[0]+i][index[1]+j][index[2]+k].getImmuneCellClustersConcentration())
-            min_concentration_index = concentration.index(min(concentration))
-            side = 2 * move_range + 1
-            new_x = int(min_concentration_index/side**2)
-            temp = min_concentration_index % side**2
-            new_y = int(temp/side)
-            new_z = temp % side
-            if(i != new_x and y != new_y and z != new_z):
-                self._grid[index[0]+i][index[1]+j][index[2]+k].removeImmuneCellClusterCluster(immuneCellCluster)
+            for i in range(-move_range, move_range+1):
+                if (index.x + i) < 0 or (index.x + i) >= len(self._grid):
+                    continue
+                for j in range(-move_range, move_range+1):
+                    if (index.y + j) < 0 or (index.y + j) >= len(self._grid[0]):
+                        continue
+                    for k in range(-move_range, move_range+1):
+                        if (index.z + k) < 0 or (index.z + k) >= len(self._grid[0][0]):
+                            continue
+                        concentration.append((self._grid[index.x + i][index.y + j][index.z + k].getImmuneCellClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
+           
+            concentration, loc = min(concentration)
+            (new_x, new_y, new_z) = loc
+            assert new_x >= 0 and new_x < len(self._grid)
+            assert new_y >= 0 and new_y < len(self._grid[0])
+            assert new_z >= 0 and new_z < len(self._grid[0][0])
+            if(index.x != new_x or index.y != new_y or index.z != new_z):
+                self._grid[index.x][index.y][index.z].removeImmuneCellClusterCluster(immuneCellCluster)
                 self._grid[new_x][new_y][new_z].addImmuneCellClusterCluster(immuneCellCluster)
                 immuneCellCluster.setRelativeLocation(Point(new_x, new_y, new_z))
     
     def timeStep(self):
+        if globals.time % parameters.cell_count_history_interval == 0:
+            self.bacteriaCountHistory.append(self.getBacteriaCount())
+
         #Move, Grow bacteria
         for cluster in self.bacteriaClusters:
             cluster.timeStep()
@@ -220,12 +248,10 @@ class Organ(AbstractHost):
         #exits
         self.exitBacteriaCluster()
         self.exitImmuneCellCluster()
-        if globals.time % parameters.cell_count_history_interval == 0:
-            self.bacteriaCountHistory.append(self.getBacteriaCount())
 
     def __repr__(self):
         return "Organ: " + self.name + "\n" \
             + "    id: " + str(self.id) + " mass: " + str(self.mass) + " \n" \
-            + "    length: " + self.length + "\n" \
-            + "    side length: " + self.sideLength + "\n" \
-            + "    health: " + self.health + "\n" \
+            + "    length: " + str(self.length) + "\n" \
+            + "    side length: " + str(self.sideLength) + "\n" \
+            + "    health: " + str(self.health) + "\n" \

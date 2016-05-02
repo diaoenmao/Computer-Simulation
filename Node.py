@@ -102,6 +102,8 @@ class Node(AbstractHost):
         assert(cluster.canExitHost())
         self.immuneCellClusters.remove(cluster)
         cluster.exitHost()
+        if self._tail:
+            heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))
 
     def getImmuneCellCount(self):
         count = 0
@@ -127,6 +129,8 @@ class Node(AbstractHost):
         assert(cluster.canExitHost())
         self.bacteriaClusters.remove(cluster)
         cluster.exitHost()
+        if self._tail:
+            heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
 
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
@@ -152,6 +156,9 @@ class Node(AbstractHost):
         return self._velocity
 
     def timeStep(self):
+        if globals.time % parameters.cell_count_history_interval == 0:
+            self.bacteriaCountHistory.append(self.getBacteriaCount())
+
         assert(len(self.edges) > 0 or len(self._sinks) > 0)
         hosts = self.getChildren()
         flows = []
@@ -207,8 +214,6 @@ class Node(AbstractHost):
 
         self.residualVolume -= actualFlow
         assert(self.residualVolume >= 0 and self.residualVolume <= self.volume)
-        if globals.time % parameters.cell_count_history_interval == 0:
-            self.bacteriaCountHistory.append(self.getBacteriaCount())
         
     def __repr__(self):
         return "Node: " + self.name + "\n" \

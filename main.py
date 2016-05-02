@@ -53,13 +53,11 @@ for id, cluster in parameters.bacteria_t0.items():
 	id = int(id)
 	assert(isinstance(cluster, AbstractBacteriaCellCluster))
 	objects[id].enterBacteriaCluster(cluster)
-	cluster.enterHost(objects[id])
 
 for id, cluster in parameters.immune_t0.items():
 	id = int(id)
 	assert(isinstance(cluster, AbstractImmuneCellCluster))
 	objects[id].enterImmuneCellCluster(cluster)
-	cluster.enterHost(objects[id])
 
 globals.objects = objects
 

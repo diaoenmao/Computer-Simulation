@@ -23,6 +23,7 @@ class TestBacteriaCellCluster(AbstractBacteriaCellCluster):
 
     def enterHost(self, host):
         assert(isinstance(host, AbstractHost))
+        self.location = None
         self.host = host
 
     def canExitHost(self):
@@ -53,7 +54,7 @@ class TestBacteriaCellCluster(AbstractBacteriaCellCluster):
             self.isDead = True
         
     def getMoveSpeed(self):
-        return 0
+        return 0.01
 
     def inContact(self, cluster):
         if self.isDead:
@@ -73,4 +74,4 @@ class TestBacteriaCellCluster(AbstractBacteriaCellCluster):
         self.cellCount -= int(count/self.cellCount)
 
     def __repr__(self):
-        return self.name + "\n    id: " + str(self.id)
+        return self.name + "\n    id: " + str(self.id) + str(self.location)
