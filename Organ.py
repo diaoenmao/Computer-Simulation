@@ -6,6 +6,7 @@ import numpy as np
 from globals import globals
 from parameters import *
 from heapq import heappush, heappop
+from AbstractBacteriaCellCluster import *
 
 class Organ(AbstractHost):
     #retention rate.
@@ -96,19 +97,19 @@ class Organ(AbstractHost):
             assert point is not None
             if point == self._grid_exit:
                 #exit
-                cluster.exitHost(self)
+                cluster.exitHost()
                 self.immuneCellClusters.remove(cluster)
 
     def getImmuneCellCount(self):
         cellCount = 0
         for node in self.immuneCellClusters:
-            cellCount += node.cellCount()
+            cellCount += node.getCellCount()
         return cellCount
         
     def getBacteriaCount(self):
         bacteriaCount = 0
         for node in self.bacteriaClusters:
-            bacteriaCount += node.bacteriaCount()
+            bacteriaCount += node.getCellCount()
         return bacteriaCount
     
     def getBacteriaClusters(self):
@@ -119,7 +120,7 @@ class Organ(AbstractHost):
 
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
-        bacteriaClusters.append(cluster)
+        self.bacteriaClusters.append(cluster)
         container = self._grid[self._grid_entrance.x][self._grid_entrance.y][self._grid_entrance.z]
         assert container is not None
 
@@ -135,19 +136,19 @@ class Organ(AbstractHost):
             assert point is not None
             if point == self._grid_exit:
                 #exit
-                cluster.exitHost(self)
+                cluster.exitHost()
                 self.bacteriaClusters.remove(cluster)
                 
     def interact(self):
         if self.bacteriaClusters:
             for bacteriaCluster1 in self.bacteriaClusters:
-                for bacteriaCluster2 in bacteriaClusters:
+                for bacteriaCluster2 in self.bacteriaClusters:
                     if(bacteriaCluster1.getRelativeLocation()==bacteriaCluster2.getRelativeLocation()):
                         bacteriaCluster1.inContact(bacteriaCluster2)
                         bacteriaCluster2.inContact(bacteriaCluster1)
         if self.immuneCellClusters:
             for immuneCellCluster1 in self.immuneCellClusters:
-                for immuneCellCluster2 in immuneCellClusters:
+                for immuneCellCluster2 in self.immuneCellClusters:
                     if(immuneCellCluster1.getRelativeLocation()==immuneCellCluster2.getRelativeLocation()):
                         immuneCellCluster1.inContact(immuneCellCluster2)
                         immuneCellCluster2.inContact(immuneCellCluster1)
@@ -159,57 +160,57 @@ class Organ(AbstractHost):
                         immuneCellCluster.inContact(bacteriaCluster)
 
     def moveClusters(self):
-        for index,container in np.ndenumerate(self._grid):
-            assert(isinstance(container, Container))
-            bacteriaClusters = container.getBacteriaClusters()
-            immuneCellClusters = container.getImmuneCellClusters()
-            for bacteriaCluster in bacteriaClusters:
-                move_range = int(bacteriaCluster.getMoveSpeed()/parameters.organ_grid_resolution)
-                concentration = []
-                for i in range(-move_range,move_range+1):
-                    for j in range(-move_range,move_range+1):
-                        for k in range(-move_range,move_range+1):
-                            concentration.append(self._grid[index[0]+i][index[1]+j][index[2]+k].getBacteriaClustersConcentration())
-                min_concentration_index = concentration.index(min(concentration))
-                side = 2*move_range+1
-                new_x = int(min_concentration_index/side**2)
-                temp = min_concentration_index % side**2
-                new_y = int(temp/side)
-                new_z = temp % side
-                if(i != new_x and y != new_y and z != new_z):
-                    self._grid[index[0]+i][index[1]+j][index[2]+k].removeBacteriaCluster(bacteriaCluster)
-                    self._grid[new_x][new_y][new_z].addBacteriaCluster(bacteriaCluster)
-                
-            for immuneCellCluster in immuneCellClusters:
-                move_range = int(immuneCellCluster.getMoveSpeed()/parameters.organ_grid_resolution)
-                concentration = []
-                for i in range(-move_range,move_range+1):
-                    for j in range(-move_range,move_range+1):
-                        for k in range(-move_range,move_range+1):
-                            concentration.append(self._grid[index[0]+i][index[1]+j][index[2]+k].getImmuneCellClustersConcentration())
-                min_concentration_index = concentration.index(min(concentration))
-                side = 2*move_range+1
-                new_x = int(min_concentration_index/side**2)
-                temp = min_concentration_index % side**2
-                new_y = int(temp/side)
-                new_z = temp % side
-                if(i != new_x and y != new_y and z != new_z):
-                    self._grid[index[0]+i][index[1]+j][index[2]+k].removeImmuneCellClusterCluster(immuneCellCluster)
-                    self._grid[new_x][new_y][new_z].addImmuneCellClusterCluster(immuneCellCluster)
+        for bacteriaCluster in self.bacteriaClusters:
+            index = bacteriaCluster.getRelativeLocation()
+            move_range = int(bacteriaCluster.getMoveSpeed() / parameters.organ_grid_resolution)
+            concentration = []
+            for i in range(-move_range,move_range+1):
+                for j in range(-move_range,move_range+1):
+                    for k in range(-move_range,move_range+1):
+                        concentration.append(self._grid[index.x + i][index.y + j][index.z + k].getBacteriaClustersConcentration())
+            min_concentration_index = concentration.index(min(concentration))
+            side = 2 * move_range + 1
+            new_x = int(min_concentration_index / side ** 2)
+            temp  = min_concentration_index % side**2
+            new_y = int(temp / side)
+            new_z = temp % side
+            if(i != new_x and y != new_y and z != new_z):
+                self._grid[index.x + i][index.y + j][index.z + k].removeBacteriaCluster(bacteriaCluster)
+                self._grid[new_x][new_y][new_z].addBacteriaCluster(bacteriaCluster)
+                bacteriaCluster.setRelativeLocation(Point(new_x, new_y, new_z))
+
+        for immuneCellCluster in self.immuneCellClusters:
+            index = immuneCellCluster.getRelativeLocation()
+            move_range = int(immuneCellCluster.getMoveSpeed()/parameters.organ_grid_resolution)
+            concentration = []
+            for i in range(-move_range,move_range+1):
+                for j in range(-move_range,move_range+1):
+                    for k in range(-move_range,move_range+1):
+                        concentration.append(self._grid[index[0]+i][index[1]+j][index[2]+k].getImmuneCellClustersConcentration())
+            min_concentration_index = concentration.index(min(concentration))
+            side = 2 * move_range + 1
+            new_x = int(min_concentration_index/side**2)
+            temp = min_concentration_index % side**2
+            new_y = int(temp/side)
+            new_z = temp % side
+            if(i != new_x and y != new_y and z != new_z):
+                self._grid[index[0]+i][index[1]+j][index[2]+k].removeImmuneCellClusterCluster(immuneCellCluster)
+                self._grid[new_x][new_y][new_z].addImmuneCellClusterCluster(immuneCellCluster)
+                immuneCellCluster.setRelativeLocation(Point(new_x, new_y, new_z))
     
     def timeStep(self):
         #Move, Grow bacteria
         for cluster in self.bacteriaClusters:
-            cluster.timeStep(self)
+            cluster.timeStep()
 
         #Immune response -> move, attack bacteria, remove infected host cells
         for cluster in self.immuneCellClusters:
-            cluster.timeStep(self)
+            cluster.timeStep()
         
         while len(self._flowEvent) > 0 and self._flowEvent[0][0] <= globals.time:
             (time, flow) = heappop(self._flowEvent)
             self.residualVolume -= flow
-            assert(self.residualVolume > 0)
+            assert(self.residualVolume >= 0)
 
         #Calculate new cells position
         self.moveClusters()

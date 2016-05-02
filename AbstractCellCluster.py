@@ -2,7 +2,19 @@ from abc import *
 
 class AbstractCellCluster(metaclass=ABCMeta):
     @abstractmethod
-    def getCellcount(self):
+    def getCellCount(self):
+        ...
+
+    @abstractmethod
+    def enterHost(self, host):
+        ...
+
+    @abstractmethod
+    def canExitHost(self):
+        ...
+
+    @abstractmethod 
+    def exitHost(self):
         ...
 
     @abstractmethod

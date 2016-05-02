@@ -99,9 +99,9 @@ class Node(AbstractHost):
     def exitImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
         assert(cluster in self.immuneCellClusters)
-        assert(cluster.canExitHost(self))
+        assert(cluster.canExitHost())
         self.immuneCellClusters.remove(cluster)
-        cluster.exitHost(self)
+        cluster.exitHost()
 
     def getImmuneCellCount(self):
         count = 0
@@ -124,9 +124,9 @@ class Node(AbstractHost):
     def exitBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
         assert(cluster in self.bacteriaClusters)
-        assert(cluster.canExitHost(self))
+        assert(cluster.canExitHost())
         self.bacteriaClusters.remove(cluster)
-        cluster.exitHost(self)
+        cluster.exitHost()
 
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
@@ -179,37 +179,32 @@ class Node(AbstractHost):
         approxImmuneCellsToExit = actualFlow / self.volume * self.getImmuneCellCount()
         
         #Handle bacteria and immune cells
-        clustersLeft = []
         cellsLeftCount = 0
         for cluster in self.bacteriaClusters:
             if not cluster.canExitHost():
                 continue
             #random child node to enter
-            hostToEnter = int(np.random.uniform(0, len(self.hosts)))
-            self.hosts[hostToEnter].enterBacteriaCluster(cluster)
-            clustersLeft.append(cluster)
-            cellsLeftCount += cluster.getCellcount()
+            hostToEnter = int(np.random.uniform(0, len(hosts)))
+            self.exitBacteriaCluster(cluster)
+            hosts[hostToEnter].enterBacteriaCluster(cluster)
+            cluster.enterHost(hosts[hostToEnter])
+            cellsLeftCount += cluster.getCellCount()
             if cellsLeftCount >= approxBacteriaCellsToExit:
                 break
-        
-        for cluster in clustersLeft:
-            self.exitBacteriaCluster(cluster)
 
-        clustersLeft = []
         cellsLeftCount = 0
         for cluster in self.immuneCellClusters:
             if not cluster.canExitHost():
                 continue
             #random child node to enter
-            hostToEnter = int(np.random.uniform(0, len(self.hosts)))
-            self.hosts[hostToEnter].enterImmuneCellCluster(cluster)
-            clustersLeft.append(cluster)
-            cellsLeftCount += cluster.getCellcount()
+            hostToEnter = int(np.random.uniform(0, len(hosts)))
+            self.exitImmuneCellCluster(cluster)
+            hosts[hostToEnter].enterImmuneCellCluster(cluster)
+            cluster.enterHost(hosts[hostToEnter])
+            cellsLeftCount += cluster.getCellCount()
             if cellsLeftCount >= approxImmuneCellsToExit:
                 break
 
-        for cluster in clustersLeft:
-            self.exitImmuneCellCluster(cluster)
         self.residualVolume -= actualFlow
         assert(self.residualVolume >= 0 and self.residualVolume <= self.volume)
         if globals.time % parameters.cell_count_history_interval == 0:

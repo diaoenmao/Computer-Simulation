@@ -92,7 +92,7 @@ def draw_body(nodes):
     anim()
 
 @mlab.show
-@mlab.animate(delay=parameters.refresh_interval * 1000)
+@mlab.animate(delay=int(parameters.refresh_interval * 1000))
 def anim():
     global vessels, colorGradient, timeText, showingNode
     timeText = None

@@ -41,6 +41,7 @@ class GenericSink(AbstractHost):
                 heappush(self.exitImmuneCellClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
             else:
                 self.immuneCellClusters.remove(cluster)
+                cluster.exitHost()
                 exited += cluster.getCellCount()
                 heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
         return exited
@@ -52,18 +53,18 @@ class GenericSink(AbstractHost):
 
     def enterBacteriaCluster(self, cluster):
         assert(isinstance(cluster, AbstractBacteriaCellCluster))
-        bacteriaClusters.append(cluster)
+        self.bacteriaClusters.append(cluster)
         heappush(self.exitBacteriaClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
         cluster.enterHost(self)
 
     def timeStep(self):
         #Grow bacteria
         for cluster in self.bacteriaClusters:
-            cluster.timeStep(self)
+            cluster.timeStep()
 
         #Immune response -> move, attack bacteria, remove infected host cells
         for cluster in self.immuneCellClusters:
-            cluster.timeStep(self)
+            cluster.timeStep()
 
         #exits
         self.exitBacteriaCluster()
@@ -92,6 +93,7 @@ class GenericSink(AbstractHost):
                 heappush(self.exitBacteriaClusterEvent, (globals.time + parameters.sink_travel_time, cluster))
             else:
                 self.bacteriaClusters.remove(cluster)
+                cluster.exitHost()
                 exited += cluster.getCellCount()
                 heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
         return exited

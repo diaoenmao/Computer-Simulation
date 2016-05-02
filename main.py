@@ -27,13 +27,14 @@ def simulate():
 		initialVelocity = oscillator.getVelocity()
 		#Get bacteria,
 		while len(globals.terminalOutputEvent) > 0 and globals.terminalOutputEvent[0][0] <= globals.time:
-			(time, cluster) = heappop(self.terminalOutputEvent)
+			(time, cluster) = heappop(globals.terminalOutputEvent)
 			assert(isinstance(cluster, AbstractCellCluster))
 			if isinstance(cluster, AbstractBacteriaCellCluster):
 				head.enterBacteriaCluster(cluster)
+				cluster.enterHost(head)
 			elif isinstance(cluster, AbstractImmuneCellCluster):
 				head.enterImmuneCellCluster(cluster)
-		
+				cluster.enterHost(head)
 		flow = oscillator.getVolume()
 		actualFlow = head.setFlow(flow)
 		oscillator.setlastVolume(actualFlow)
@@ -52,11 +53,13 @@ for id, cluster in parameters.bacteria_t0.items():
 	id = int(id)
 	assert(isinstance(cluster, AbstractBacteriaCellCluster))
 	objects[id].enterBacteriaCluster(cluster)
+	cluster.enterHost(objects[id])
 
 for id, cluster in parameters.immune_t0.items():
 	id = int(id)
 	assert(isinstance(cluster, AbstractImmuneCellCluster))
 	objects[id].enterImmuneCellCluster(cluster)
+	cluster.enterHost(objects[id])
 
 globals.objects = objects
 
