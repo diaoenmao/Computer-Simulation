@@ -19,10 +19,14 @@ class GenericSink(AbstractHost):
             assert(isinstance(cluster, AbstractBacteriaCellCluster))
             self.bacteriaClusters.append(cluster)
         self.bacteriaCountHistory = []
+        self.flowHistory = []
 
     def getCellCountHistory(self):
-        return self.bacteriaCountHistory    
-    
+        return self.bacteriaCountHistory
+
+    def getFlowHistory(self):
+        return self.flowHistory
+
     def getChildren(self):
         return None
 
@@ -100,6 +104,8 @@ class GenericSink(AbstractHost):
         return exited
 
     def setFlow(self, flow): #return actualFlow
+        if globals.time % parameters.flow_history_interval == 0:
+            self.flowHistory.append(flow)
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity

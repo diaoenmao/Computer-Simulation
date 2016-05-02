@@ -44,9 +44,13 @@ class Node(AbstractHost):
         self.residualVolume = 0
         self.parent = None
         self.bacteriaCountHistory = []
+        self.flowHistory = []
 
     def getCellCountHistory(self):
         return self.bacteriaCountHistory
+
+    def getFlowHistory(self):
+        return self.flowHistory
 
     def setTail(self, isTail):
         self._tail = isTail
@@ -144,6 +148,8 @@ class Node(AbstractHost):
             self.residualVolume = self.volume
         else:
             self.residualVolume += flow
+        if globals.time % parameters.flow_history_interval == 0:
+            self.flowHistory.append(flow)
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity

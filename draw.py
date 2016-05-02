@@ -10,7 +10,7 @@ import globals as g
 import copy
 
 def picker_callback(picker):
-    global vessels, lastSelected, bound, showingNode
+    global vessels, lastSelected, bound, showingNode, plots
     if 'lastSelected' not in globals():
         lastSelected = None
     if 'bound' not in globals():
@@ -28,12 +28,23 @@ def picker_callback(picker):
             tBound = mlab.outline(top)
             bBound = mlab.outline(bottom)
             bound = (tBound, bBound)
-
-            plt.clf()
+            if plots is None:
+                f, plots = plt.subplots(2, 1)
+            (ax1, ax2) = plots
+            ax1.cla()
             history = copy.deepcopy(node.getCellCountHistory())
             x = np.linspace(0, len(history) * parameters.cell_count_history_interval, len(history))
             y = history
-            plt.plot(x, y, 'r')
+            ax1.plot(x, y, 'r')
+            ax1.set_title('Bacteria Count history')            
+
+            ax2.cla()
+            history = copy.deepcopy(node.getFlowHistory())
+            x = np.linspace(0, len(history) * parameters.cell_count_history_interval, len(history))
+            y = history
+            ax2.plot(x, y, 'b')
+            ax2.set_title('Blood flow history')            
+
             if showingNode is None:
                 plt.show()
 
@@ -46,7 +57,7 @@ def draw_body(nodes):
     assert(nodes is not None)
     global body_model
     global vessels
-    global figure, colorGradient, showingFigure, showingNode
+    global figure, colorGradient, showingFigure, showingNode, plots
 
     if 'vessels' not in globals():
         vessels = []
@@ -88,6 +99,7 @@ def draw_body(nodes):
     
     plt.ion()
     showingNode = None
+    plots = None
     mlab.view(0,0)
     anim()
 
@@ -126,12 +138,20 @@ def anim():
             bottom.module_manager.scalar_lut_manager.lut.table = lutB
         
         if showingNode is not None:
-            plt.clf()
+            (ax1, ax2) = plots
+            ax1.cla()
             history = copy.deepcopy(showingNode.getCellCountHistory())
             x = np.linspace(0, len(history) * parameters.cell_count_history_interval, len(history))
             y = history
-            plt.plot(x, y, 'r')
+            ax1.plot(x, y, 'r')
+            ax1.set_title('Bacteria Count history')            
 
+            ax2.cla()
+            history = copy.deepcopy(showingNode.getFlowHistory())
+            x = np.linspace(0, len(history) * parameters.cell_count_history_interval, len(history))
+            y = history
+            ax2.plot(x, y, 'b')
+            ax2.set_title('Blood flow history')  
         mlab.draw()
         if parameters.verbose:      
             print("updating graph")

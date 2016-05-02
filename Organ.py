@@ -40,10 +40,14 @@ class Organ(AbstractHost):
         self.residualVolume = 0
         self._flowEvent = []
         self.bacteriaCountHistory = []
+        self.flowHistory = []
 
     def getCellCountHistory(self):
         return self.bacteriaCountHistory
-
+    
+    def getFlowHistory(self):
+        return self.flowHistory
+    
     def setHealth(self, heath):
         self.heath = heath
     
@@ -57,6 +61,8 @@ class Organ(AbstractHost):
         else:
             self.residualVolume += flow
         heappush(self._flowEvent, (globals.time + int(self.length / (self.getFlowVelocity() * parameters.delta_t)), flow))
+        if globals.time % parameters.flow_history_interval == 0:
+            self.flowHistory.append(flow)
         return flow
 
     def setParent(self, parents): #may be used to calculate this velocity

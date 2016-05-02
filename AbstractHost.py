@@ -7,6 +7,10 @@ class AbstractHost(metaclass=ABCMeta):
         ...
 
     @abstractmethod
+    def getFlowHistory(self):
+        ...
+
+    @abstractmethod
     def setFlow(self, flow): #return actualFlow
         ...
 
