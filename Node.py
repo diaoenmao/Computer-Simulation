@@ -102,7 +102,7 @@ class Node(AbstractHost):
         assert(cluster.canExitHost())
         self.immuneCellClusters.remove(cluster)
         cluster.exitHost()
-        if self._tail:
+        if len(self.getChildren()) == 0:
             heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))
 
     def getImmuneCellCount(self):
@@ -129,7 +129,7 @@ class Node(AbstractHost):
         assert(cluster.canExitHost())
         self.bacteriaClusters.remove(cluster)
         cluster.exitHost()
-        if self._tail:
+        if len(self.getChildren()) == 0:
             heappush(globals.terminalOutputEvent, (globals.time + parameters.vein_travel_time, cluster))                
 
     def enterBacteriaCluster(self, cluster):
@@ -191,10 +191,10 @@ class Node(AbstractHost):
             if not cluster.canExitHost():
                 continue
             #random child node to enter
-            hostToEnter = int(np.random.uniform(0, len(hosts)))
             self.exitBacteriaCluster(cluster)
-            hosts[hostToEnter].enterBacteriaCluster(cluster)
-            cluster.enterHost(hosts[hostToEnter])
+            if len(hosts) != 0:
+                hostToEnter = int(np.random.uniform(0, len(hosts)))
+                hosts[hostToEnter].enterBacteriaCluster(cluster)
             cellsLeftCount += cluster.getCellCount()
             if cellsLeftCount >= approxBacteriaCellsToExit:
                 break
@@ -204,10 +204,10 @@ class Node(AbstractHost):
             if not cluster.canExitHost():
                 continue
             #random child node to enter
-            hostToEnter = int(np.random.uniform(0, len(hosts)))
             self.exitImmuneCellCluster(cluster)
-            hosts[hostToEnter].enterImmuneCellCluster(cluster)
-            cluster.enterHost(hosts[hostToEnter])
+            if len(hosts) != 0:
+                hostToEnter = int(np.random.uniform(0, len(hosts)))
+                hosts[hostToEnter].enterImmuneCellCluster(cluster)
             cellsLeftCount += cluster.getCellCount()
             if cellsLeftCount >= approxImmuneCellsToExit:
                 break

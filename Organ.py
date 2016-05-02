@@ -165,7 +165,6 @@ class Organ(AbstractHost):
                         immuneCellCluster.inContact(bacteriaCluster)
 
     def moveClusters(self):
-        print(self.bacteriaClusters)
         for bacteriaCluster in self.bacteriaClusters:
             index = bacteriaCluster.getRelativeLocation()
             assert index is not None
@@ -181,12 +180,11 @@ class Organ(AbstractHost):
                         if int(index.z + k) < 0 or int(index.z + k) >= len(self._grid[0][0]):
                             continue
                         concentration.append((self._grid[index.x + i][index.y + j][index.z + k].getBacteriaClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
-            
+                        
             if len(concentration) == 0:
                 print(len(self._grid))
                 print(index)
-            print(len(self._grid))
-            print(index)
+
             concentration, loc = min(concentration)
             (new_x, new_y, new_z) = loc
             assert new_x >= 0 and new_x < len(self._grid)

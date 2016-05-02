@@ -27,6 +27,7 @@ def simulate():
 		initialVelocity = oscillator.getVelocity()
 		#Get bacteria,
 		while len(globals.terminalOutputEvent) > 0 and globals.terminalOutputEvent[0][0] <= globals.time:
+			print("here")
 			(time, cluster) = heappop(globals.terminalOutputEvent)
 			assert(isinstance(cluster, AbstractCellCluster))
 			if isinstance(cluster, AbstractBacteriaCellCluster):
