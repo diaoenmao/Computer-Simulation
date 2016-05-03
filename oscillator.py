@@ -32,12 +32,14 @@ class Oscillator:
 			self.calculate()
 		
 		remaining = globals.time % (self.rest + self.beat)
-		if remaining < self.beat:
-			if ((globals.time - 1) % (self.rest + self.beat)) >= self.beat:
+		if ((globals.time - 1) % (self.rest + self.beat)) == self.beat - 1:
 				self.residualVolume = parameters.stroke_volume
-		if self.residualVolume >= self.stepVolume:
-			return self.stepVolume
+		if remaining < self.beat:
+			if self.residualVolume >= self.stepVolume:
+				return self.stepVolume
+			else:
+				return self.residualVolume
 		else:
-			return self.residualVolume
+			return 0
 
 oscillator = Oscillator()

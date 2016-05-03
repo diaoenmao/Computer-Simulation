@@ -42,7 +42,7 @@ class Node(AbstractHost):
             self._velocity = 0
         self.volume = self.radius ** 2 * math.pi * self.length
         self.residualVolume = 0
-        self.parent = None
+        self._parent = None
         self.bacteriaCountHistory = []
         self.flowHistory = []
 
@@ -59,6 +59,9 @@ class Node(AbstractHost):
             cNaught = (self.youngs_modulus * self.wall_thickness / (2 * parameters.blood_density * self.radius)) ** 0.5
             zNaught = parameters.blood_density * cNaught / (1 - parameters.poission_ratio) ** 0.5 
             self._resistance += zNaught * (1 + parameters.nominal_reflection_coefficient) / (1 - parameters.nominal_reflection_coefficient)
+
+            assert self._resistance > 0
+            
             self._sinks.append(genericSink)
 
     def isTail(self):
@@ -143,6 +146,7 @@ class Node(AbstractHost):
 
     def setFlow(self, flow): #return actualFlow
         assert(flow >= 0)
+
         if (self.residualVolume + flow) > self.volume:
             flow = self.volume - self.residualVolume
             self.residualVolume = self.volume
@@ -150,6 +154,7 @@ class Node(AbstractHost):
             self.residualVolume += flow
         if globals.time % parameters.flow_history_interval == 0:
             self.flowHistory.append(flow)
+
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity
@@ -157,8 +162,8 @@ class Node(AbstractHost):
         self._parent = p
 
     def getFlowVelocity(self):
-        if self.parent is not None:
-            self._velocity = self.parent.radius / self.radius * self.parent._velocity
+        if self._parent is not None:
+            self._velocity = self._parent.radius / self.radius * self._parent._velocity
         return self._velocity
 
     def timeStep(self):
@@ -168,21 +173,22 @@ class Node(AbstractHost):
         assert(len(self.edges) > 0 or len(self._sinks) > 0)
         hosts = self.getChildren()
         flows = []
-        actualFlow = 0
-
+        actualFlow = 0 
+        
         for node in hosts:
-            node_velocity = self.getFlowVelocity()
+            node_velocity = node.getFlowVelocity()
             deltaP = 0.5 * parameters.blood_density * abs(self._velocity ** 2 - node_velocity ** 2)
             flowRate = deltaP / self._resistance
             flow = flowRate * parameters.delta_t
+            assert flow >= 0
             flows.append(flow)
+
         if sum(flows) > self.residualVolume:
             if not globals.printed_lowering_delta_t_message:
                 print('******Please consider lowering delta_t.******')
                 globals.printed_lowering_delta_t_message = True
             factor = self.residualVolume / sum(flows)
             flows = [float(i) * factor for i in flows ]
-
 
         for flow, host in zip(flows, hosts):
             flow = host.setFlow(flow)
@@ -219,7 +225,9 @@ class Node(AbstractHost):
                 break
 
         self.residualVolume -= actualFlow
-        assert(self.residualVolume >= 0 and self.residualVolume <= self.volume)
+        if self.residualVolume < 0:
+            self.residualVolume = 0
+        assert(self.residualVolume <= self.volume)
         
     def __repr__(self):
         return "Node: " + self.name + "\n" \

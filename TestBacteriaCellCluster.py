@@ -4,6 +4,7 @@ from Point import *
 from sequences import bacteriaClusterSq
 import math
 import parameters as p
+from globals import *
 
 class TestBacteriaCellCluster(AbstractBacteriaCellCluster):
     def __init__(self, cellCount):
@@ -14,6 +15,7 @@ class TestBacteriaCellCluster(AbstractBacteriaCellCluster):
         self.host = None
         self.cellCount = cellCount
         self.lifespan = p.parameters.bacteria_lifespan
+        self.born = globals.time
 
     def __lt__(self,other):
         return True
@@ -49,9 +51,10 @@ class TestBacteriaCellCluster(AbstractBacteriaCellCluster):
         self.isDead = True
 
     def _age(self):
-        self.cellCount -= 1
-        if(self.cellCount <= 0):
-            self.isDead = True
+        if (self.born + p.parameters.bacteria_lifespan / p.parameters.delta_t) >= globals.time:
+            self.cellCount -= 1
+            if(self.cellCount <= 0):
+                self.isDead = True
         
     def getMoveSpeed(self):
         return 0.01
