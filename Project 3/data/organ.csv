@@ -1,0 +1,16 @@
+name,id,mass,volume,from,yaw,pitch
+liver,130,1650,1470,63,0,0
+brain,131,1400,1350,"46,47,52,53",0,0
+spinal cord,132,38,36,"9,15",0,0
+lung 1,133,825,775,1,0,0
+lung 2,134,825,775,1,0,0
+heart,135,330,300,1,0,0
+kidney 1,136,300,270,64,0,0
+kidney 2,137,300,270,129,0,0
+spleen,138,155,145,62,0,0
+thyroid gland,141,40,36,"33,35",0,0
+adrenal gland 1,143,20,18,64,0,0
+adrenal gland 2,144,20,18,129,0,0
+thymus gland,145,16,14,"33,35",0,0
+gallbladder,146,7,7,63,0,0
+parathyroid glands,148,0.15,0.14,"33,35",0,0

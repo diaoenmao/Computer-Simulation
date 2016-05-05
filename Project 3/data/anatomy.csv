@@ -1,0 +1,129 @@
+name,id,length,radius,wall_thickness,youngs_modulus
+"Ascending aorta",1,4.0,1.45,0.,4
+"Aortic arch",2,2.0,1.12,0.132,4
+"Aortic arch",5,3.9,1.07,0.127,4
+"Thoracic aorta",11,5.2,1.00,0.120,4
+"Thoracic aorta",21,5.2,0.95,0.116,4
+"Thoracic aorta",34,5.2,0.95,0.116,4
+"Abdominal aorta",50,5.3,0.87,0.108,4
+"Abdominal aorta",65,5.3,0.57,0.080,4
+"Abdominal aorta",75,5.3,0.57,0.080,4
+"Coeliac artery",49,1.0,0.39,0.064,4
+"Gastric artery",61,7.1,0.18,0.045,4
+"Splenic artery",62,6.3,0.28,0.054,4
+"Hepatic artery",63,6.6,0.22,0.049,4
+"Renal artery",64,3.2,0.26,0.053,4
+"Superior mesenteric",66,5.9,0.43,0.069,4
+"Gastric artery",67,3.2,0.26,0.053,4
+"Inferior mesenteric",83,5.0,0.16,0.043,4
+"Common carotid L",4,8.9,0.37,0.063,4
+"Common carotid L",10,8.9,0.37,0.063,4
+"Common carotid L",20,3.1,0.37,0.063,4
+"Common carotid R",12,8.9,0.37,0.063,4
+"Common carotid R",22,8.9,0.37,0.063,4
+"Left subclavian artery",3,3.4,0.42,0.067,4
+"Brachiocephalic artery",6,3.4,0.62,0.086,4
+"Common iliac",82,5.8,0.52,0.076,4
+"Common iliac",84,5.8,0.52,0.076,4
+"External iliac",89,8.3,0.29,0.055,4
+"External iliac",92,8.3,0.29,0.055,4
+"Internal iliac",90,5.0,0.20,0.040,16
+"Internal iliac",91,5.0,0.20,0.040,16
+"External iliac",98,6.1,0.27,0.053,4
+"External iliac",99,6.1,0.27,0.053,4
+"Femoral artery",104,12.7,0.24,0.050,8
+"Femoral artery",107,12.7,0.24,0.050,8
+"Profundis artery",105,12.6,0.23,0.049,16
+"Profundis artery",106,12.6,0.23,0.049,16
+"Femoral artery",109,12.7,0.24,0.050,8
+"Femoral artery",110,12.7,0.24,0.050,8
+"Popliteal artery",111,9.4,0.2,0.047,8
+"Popliteal artery",112,9.4,0.2,0.047,8
+"Popliteal artery",113,9.4,0.2,0.050,8
+"Popliteal artery",114,9.4,0.2,0.050,8
+"Anterior tibial artery",115,2.5,0.13,0.039,16
+"Anterior tibial artery",118,2.5,0.13,0.039,16
+"Anterior tibial artery",119,15.0,0.10,0.020,16
+"Anterior tibial artery",124,15.0,0.10,0.020,16
+"Anterior tibial artery",125,15.0,0.10,0.020,16
+"Anterior tibial artery",128,15.0,0.10,0.020,16
+"Posterior tibial artery",116,16.1,0.18,0.045,16
+"Posterior tibial artery",117,16.1,0.18,0.045,16
+"Posterior tibial artery",121,16.1,0.18,0.045,16
+"Posterior tibial artery",122,16.1,0.18,0.045,16
+"Peroneal artery",120,15.9,0.13,0.039,16
+"Peroneal artery",123,15.9,0.13,0.039,16
+"Peroneal artery",126,15.9,0.13,0.019,16
+"Peroneal artery",127,15.9,0.13,0.019,16
+"Carotid (internal)",31,5.9,0.18,0.045,8
+"Carotid (internal)",37,5.9,0.18,0.045,8
+"External carotid",32,11.8,0.15,0.042,8
+"External carotid",36,11.8,0.15,0.042,8
+"Superior thyroid artery",33,4.0,0.07,0.020,8
+"Superior thyroid artery",35,4.0,0.07,0.020,8
+"Lingual artery",43,3.0,0.10,0.030,8
+"Lingual artery",56,3.0,0.10,0.030,8
+"Internal carotid",44,5.9,0.13,0.039,8
+"Internal carotid",55,5.9,0.13,0.039,8
+"Facial artery",45,4.0,0.1,0.030,16
+"Facial artery",54,4.0,0.1,0.030,16
+"Middle cerebral",46,3.0,0.06,0.020,16
+"Middle cerebral",53,3.0,0.06,0.020,16
+"Cerebral artery",47,5.9,0.08,0.026,16
+"Cerebral artery",52,5.9,0.08,0.026,16
+"Opthalmic artery",48,3.0,0.07,0.020,16
+"Opthalmic artery",51,3.0,0.07,0.020,16
+"Internal carotid",60,5.9,0.08,0.026,16
+"Internal carotid",68,5.9,0.08,0.026,16
+"Superficial temporal",73,4.0,0.06,0.020,16
+"Superficial temporal",77,4.0,0.06,0.020,16
+"Maxilliary artery",74,5.0,0.07,0.020,16
+"Maxilliary artery",76,5.0,0.07,0.020,16
+"Internal mammary",7,15.0,0.1,0.030,8
+"Internal mammary",15,15.0,0.1,0.030,8
+"Subclavian artery",8,6.8,0.4,0.066,4
+"Subclavian artery",14,6.8,0.4,0.066,4
+"Vertebral artery",9,14.8,0.19,0.045,8
+"Vertebral artery",13,14.8,0.19,0.045,8
+"Costo-cervical artery",16,5.0,0.1,0.030,8
+"Costo-cervical artery",26,5.0,0.1,0.030,8
+"Axilliary artery",17,6.1,0.36,0.062,4
+"Axilliary artery",25,6.1,0.36,0.062,4
+"Suprascapular",18,10.0,0.2,0.052,8
+"Suprascapular",24,10.0,0.2,0.052,8
+"Thyrocervical",19,5.0,0.1,0.030,8
+"Thyrocervical",23,5.0,0.1,0.030,8
+"Thoraco-acromial",27,3.0,0.15,0.035,16
+"Thoraco-acromial",41,3.0,0.15,0.035,16
+"Axillary artery",28,5.6,0.31,0.057,4
+"Axillary artery",40,5.6,0.31,0.057,4
+"Circumflex scapular",29,5.0,0.1,0.030,16
+"Circumflex scapular",39,5.0,0.1,0.030,16
+"Subscapular",30,8.0,0.15,0.035,16
+"Subscapular",38,8.0,0.15,0.035,16
+"Brachial artery",42,6.3,0.28,0.055,4
+"Brachial artery",57,6.3,0.28,0.055,4
+"Profunda brachi",58,15.0,0.15,0.035,8
+"Profunda brachi",70,15.0,0.15,0.035,8
+"Brachial artery",59,6.3,0.26,0.053,4
+"Brachial artery",69,6.3,0.26,0.053,4
+"Brachial artery",71,6.3,0.25,0.052,4
+"Brachial artery",79,6.3,0.25,0.052,4
+"Superior ulnar collateral",72,5.0,0.07,0.020,16
+"Superior ulnar collateral",78,5.0,0.07,0.020,16
+"Inferior ulnar collateral",80,5.0,0.06,0.020,16
+"Inferior ulnar collateral",86,5.0,0.06,0.020,16
+"Brachial artery",81,4.6,0.24,0.050,4
+"Brachial artery",85,4.6,0.24,0.050,4
+"Ulnar artery",87,6.7,0.21,0.049,8
+"Ulnar artery",94,6.7,0.21,0.049,8
+"Radial artery",88,11.7,0.16,0.043,8
+"Radial artery",93,11.7,0.16,0.043,8
+"Ulnar artery",95,8.5,0.19,0.0462,8
+"Ulnar artery",102,8.5,0.19,0.0462,8
+"Interossea artery",96,7.9,0.09,0.028,16
+"Interossea artery",101,7.9,0.09,0.028,16
+"Radial artery",97,11.7,0.16,0.043,8
+"Radial artery",100,11.7,0.16,0.043,8
+"Ulnar artery",103,8.5,0.19,0.046,8
+"Ulnar artery",108,8.5,0.19,0.046,8
