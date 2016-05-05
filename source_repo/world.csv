@@ -1,0 +1,99 @@
+Type,X1,Y1,X2,Y2,Capacity,Comment
+Street,27,32,77,32,2,10th St.
+Street,77,32,127,32,2,10th St.
+Street,127,32,168,30,2,10th St.
+Street,168,30,348,30,2,10th St.
+Street,348,30,380,35,2,10th St.
+Street,380,35,441,32,2,10th St.
+Street,441,32,562,32,2,10th St.
+Street,562,32,615,32,2,10th St.
+Street,615,32,723,32,2,10th St.
+Street,288,191,238,128,1,Hemphill
+Street,238,128,203,81,1,Hemphill
+Street,203,81,168,30,1,Hemphill
+Street,346,191,346,151,1,Dalney
+Street,346,151,347,114,1,Dalney
+Street,347,114,348,30,1,Dalney
+Street,380,196,380,123,1,State St.
+Street,380,123,380,84,1,State St.
+Street,380,84,380,35,1,State St.
+Street,380,84,441,84,1,Street from State to Atlantic at Parking Deck
+Street,380,84,441,84,1,Street from State to Atlantic at Parking Deck
+Street,437,198,441,84,1,Atlantic
+Street,441,84,441,32,1,Atlantic
+Street,548,95,562,32,1,Cherry
+Street,615,266,616,204,1,Fowler
+Street,616,204,615,131,1,Fowler
+Street,615,131,615,32,1,Fowler
+Street,288,191,312,184,1,5th to Ferst: Hemphill
+Street,312,184,346,191,1,5th to Ferst: Control
+Street,346,191,380,196,1,5th to Ferst: Dalney
+Street,380,196,437,198,1,5th to Ferst: State
+Street,437,198,497,205,1,5th to Ferst: Atlantic
+Street,497,205,523,229,1,5th to Ferst: Control
+Street,523,229,545,262,1,5th to Ferst: Cherry
+Street,545,262,615,266,1,5th to Ferst: Control
+Street,615,266,679,268,1,5th to Ferst: Fowler
+Street,679,268,733,270,1,5th to Ferst: Techwood
+Street,523,229,539,212,1,Cherry down to Ferst
+Street,539,212,536,149,1,Cherry down to Ferst
+Street,288,191,261,215,1,hemphill to curve at burger bowl
+Street,261,215,241,249,1,burger bowl to 6th
+Street,241,249,237,308,1,6th to CRC
+Street,237,308,236,386,1,CRC to 4th
+Street,236,386,245,404,1,4th to founders
+Street,245,404,288,434,1,founders to first sc parking
+Street,288,434,375,447,1,first sc parking to main sc parking
+Street,375,447,430,459,1,main sc parking to wrek
+Street,430,459,470,477,1,wrek to coon parking
+Street,470,477,490,500,1,coon parking to curve
+Street,490,500,534,501,1,curve to bobby dodd
+Street,534,501,534,553,1,bobby dodd to north ave
+Street,534,553,680,555,2,bobby dodd/north ave to techwood/north ave
+Street,680,555,737,555,2,techwood/north ave to williams st
+Street,737,555,760,555,2,williams st to evac dest
+Street,27,32,25,129,2,Tech Pkwy (Northside) -- starting at 10th: 8th
+Street,25,129,36,214,2,Tech Pkwy (Northside) -- starting at 10th: control
+Street,36,214,75,283,2,Tech Pkwy (Northside) -- starting at 10th: Northside bridge
+Street,75,283,223,425,2,Tech Pkwy (Northside) -- starting at 10th: Northside bridge
+Street,223,425,307,453,2,Tech Pkwy (Northside) -- starting at 10th: Control
+Street,307,453,380,468,2,Tech Pkwy (Northside) -- starting at 10th: State
+Street,380,468,463,491,2,Tech Pkwy (Northside) -- starting at 10th: Control
+Street,380,468,463,491,2,Tech Pkwy (Northside) -- starting at 10th: Control
+Street,463,491,506,550,2,Tech Pkwy (Northside) -- starting at 10th: North Ave
+Street,506,550,680,555,2,North Ave
+Street,680,555,684,423,1,North Ave/Techwood to Techwood/Bobby Dodd
+Street,684,423,738,423,1,Techwood/Bobby Dodd to Bobby Dodd/Williams
+Street,738,423,737,555,1,Bobby Dodd/Williams back to North Ave
+Street,684,423,612,420,1,Techwood/Bobby Dodd to Fowler
+Street,612,420,593,347,1,Fowler to parking deck
+Street,593,347,586,320,1,Parking deck to 4th
+Street,586,320,613,317,1,4th to Fowler
+Street,613,317,615,266,1,Fowler to Ferst and Fowler
+Street,684,423,682,342,1,Techwood/Bobby Dodd to 4th and Techwood
+Street,682,342,680,292,1,4th and Techwood to Lambda Chi Alpha
+Street,680,292,679,268,1,Lambda Chi Alpha to 5th
+Street,679,268,680,205,1,5th and Techwood to 6th and Techwood
+Street,680,205,616,204,1,6th and Techwood to 6th and Fowler
+Street,241,249,166,249,1,West campus residential: Sixth and Ferst to 6th and MacMillan
+Street,166,249,168,129,1,West campus residential: 6th and MacMillan to MacMillan and 8th
+Street,168,129,238,128,1,West campus residential: MacMillan and 8th to HempHill
+Street,168,129,86,129,1, West campus residential: MacMillan and 8th to Eighth St Apts
+Street,86,129,89,81,1,West campus residential: Eighth St Apts to 9th
+Street,89,81,203,81,1,West campus residential: 9th to HempHill
+Parking,622,332,593,347,1200,
+Parking,86,149,86,129,1200,
+Parking,533,350,586,320,250,
+Parking,712,342,682,342,150,Theta Xi parking
+Parking,681,131,615,131,250,
+Parking,379,409,375,447,800,
+Parking,297,376,288,434,800,
+Parking,180,304,237,308,250,
+Parking,368,290,380,196,550,
+Parking,437,328,437,198,100,
+Parking,50,87,89,81,250,8th St parking @ Eighth St Apts
+Parking,77,61,77,32,70,SREB Commons
+Parking,123,74,127,32,70,Paper Science Building
+Parking,309,151,346,151,120,GTPD
+Parking,279,114,347,114,200,GTRI at Dalney
+Parking,405,123,380,123,800,GTRI Parking Deck
