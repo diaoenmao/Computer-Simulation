@@ -45,6 +45,7 @@ class Node(AbstractHost):
         self._parent = None
         self.bacteriaCountHistory = []
         self.flowHistory = []
+        self.lastFlow = 0
 
     def getCellCountHistory(self):
         return self.bacteriaCountHistory
@@ -53,8 +54,11 @@ class Node(AbstractHost):
         return self.flowHistory
 
     def setTail(self, isTail):
+        if isTail:
+            assert len(self.edges) == 0
         self._tail = isTail
         if self._tail and len(self._sinks) == 0:
+            print("Creating sink for node id: " + str(self.id))
             genericSink = GenericSink("Sink for Node id: " + str(self.id) + ", " + self.name, None)
             cNaught = (self.youngs_modulus * self.wall_thickness / (2 * parameters.blood_density * self.radius)) ** 0.5
             zNaught = parameters.blood_density * cNaught / (1 - parameters.poission_ratio) ** 0.5 
@@ -85,13 +89,10 @@ class Node(AbstractHost):
             self._sinks = []
         self._sinks.append(organ)
 
-    def getFlowVelocity(self):
-        return self._velocity
-
     def getChildren(self): #return both nodes and organs
         if len(self._sinks) == 0:
             return self.edges
-        
+
         children = []
         for edge in self.edges:
             children.append(edge)
@@ -154,7 +155,7 @@ class Node(AbstractHost):
             self.residualVolume += flow
         if globals.time % parameters.flow_history_interval == 0:
             self.flowHistory.append(flow)
-
+        self.lastFlow = flow
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity
@@ -176,10 +177,15 @@ class Node(AbstractHost):
         actualFlow = 0 
         
         for node in hosts:
+            velocity = self.getFlowVelocity()
             node_velocity = node.getFlowVelocity()
-            deltaP = 0.5 * parameters.blood_density * abs(self._velocity ** 2 - node_velocity ** 2)
+            deltaP = 0.5 * parameters.blood_density * abs(velocity ** 2 - node_velocity ** 2)
             flowRate = deltaP / self._resistance
             flow = flowRate * parameters.delta_t
+            if flow > self.volume:
+                flow = self.volume
+            if flow == 0:
+                flow = self.lastFlow
             assert flow >= 0
             flows.append(flow)
 
@@ -193,6 +199,7 @@ class Node(AbstractHost):
         for flow, host in zip(flows, hosts):
             flow = host.setFlow(flow)
             actualFlow += flow
+
 
         approxBacteriaCellsToExit = actualFlow / self.volume * self.getBacteriaCount()
         approxImmuneCellsToExit = actualFlow / self.volume * self.getImmuneCellCount()
