@@ -84,7 +84,7 @@ class Organ(AbstractHost):
         return None
         
     def getFlowVelocity(self):
-        return parameters.sink_velocity
+        return parameters.sink_velocity * parameters.delta_t
 
     def enterImmuneCellCluster(self, cluster):
         assert(isinstance(cluster, AbstractImmuneCellCluster))
@@ -185,13 +185,10 @@ class Organ(AbstractHost):
                     for k in range(-move_range,move_range+1):
                         if int(index.z + k) < 0 or int(index.z + k) >= len(self._grid[0][0]):
                             continue
-                        concentration.append((self._grid[index.x + i][index.y + j][index.z + k].getBacteriaClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
-                        
-            if len(concentration) == 0:
-                print(len(self._grid))
-                print(index)
+                        exitDistanceBias = (self._grid_exit.x - (index.x + i)) ** 2 + (self._grid_exit.y - (index.y + j)) ** 2 + (self._grid_exit.z - (index.z + k)) ** 2
+                        concentration.append((exitDistanceBias, self._grid[index.x + i][index.y + j][index.z + k].getBacteriaClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
 
-            concentration, loc = min(concentration)
+            exitDistanceBias, concentration, loc = min(concentration)
             (new_x, new_y, new_z) = loc
             assert new_x >= 0 and new_x < len(self._grid)
             assert new_y >= 0 and new_y < len(self._grid[0])
@@ -215,9 +212,10 @@ class Organ(AbstractHost):
                     for k in range(-move_range, move_range+1):
                         if (index.z + k) < 0 or (index.z + k) >= len(self._grid[0][0]):
                             continue
-                        concentration.append((self._grid[index.x + i][index.y + j][index.z + k].getImmuneCellClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
+                        exitDistanceBias = (self._grid_exit.x - (index.x + i)) ** 2 + (self._grid_exit.y - (index.y + j)) ** 2 + (self._grid_exit.z - (index.z + k)) ** 2
+                        concentration.append((exitDistanceBias, self._grid[index.x + i][index.y + j][index.z + k].getImmuneCellClustersConcentration(), (index.x + i, index.y + j, index.z + k)))
            
-            concentration, loc = min(concentration)
+            exitDistanceBias, concentration, loc = min(concentration)
             (new_x, new_y, new_z) = loc
             assert new_x >= 0 and new_x < len(self._grid)
             assert new_y >= 0 and new_y < len(self._grid[0])
