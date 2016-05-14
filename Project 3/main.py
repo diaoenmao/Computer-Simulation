@@ -31,22 +31,16 @@ def simulate():
 			assert(isinstance(cluster, AbstractCellCluster))
 			if isinstance(cluster, AbstractBacteriaCellCluster):
 				head.enterBacteriaCluster(cluster)
+				cluster.enterHost(head)
 			elif isinstance(cluster, AbstractImmuneCellCluster):
 				head.enterImmuneCellCluster(cluster)
+				cluster.enterHost(head)
 		flow = oscillator.getVolume()
 		actualFlow = head.setFlow(flow)
 		oscillator.setlastVolume(actualFlow)
-		head._velocity = initialVelocity
 		timestep(head)
-		
-		#TEST
-		for id, cluster in parameters.bacteria_t0.items():
-			if cluster.host is None:
-				print("cluster id", id, "not in host")
-			else:
-				print("cluster id ", id, "in", cluster.host.id)
-		
-		sleep(1)
+
+		sleep(5)
 		globals.time += 1
 
 print("starting setup")

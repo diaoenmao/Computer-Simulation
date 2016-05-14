@@ -113,7 +113,7 @@ class GenericSink(AbstractHost):
         self._parent = p
 
     def getFlowVelocity(self):
-        return parameters.sink_velocity * parameters.delta_t
+        return parameters.sink_velocity
 
     def __repr__(self):
         return "Sink: " + self.name + "\n" \
