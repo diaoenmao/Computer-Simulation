@@ -20,7 +20,7 @@ Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-dr
 ##### Part A
 1. Use diffusion-based simulation and cellular automata to model propogation of infectious disease
 2. Use ODE solver to solver Ficks' second law  
-3. Introduce variations of simulation *(see souce)
+3. Introduce variations of simulation [1]
 4. Interaction enabled with Jupyter Notebook
 
 ##### Part B&C
@@ -29,7 +29,7 @@ Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-dr
 3. Parameters like intersection mode, and randomness are enabled
 
 #### Project 3
-1. Use biological data and VTK (Visuliation Tool Kit) to model and visualize human body, arterial system and organs
+1. Use biological data and VTK (Visuliation Tool Kit) to model and visualize human body, arterial system and organs [2][3]
 2. Offer cellcluster and host interface for organs, immune and bacterial clusters
 3. Create test immune and bacterial clusters for simulation
 4. Model organ as 3D matrix with cellular automata
@@ -43,6 +43,9 @@ Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-dr
 3. Document details for our development process
 
 #### Source
+[1] Dianne P. O’Leary, Scientific Computing with Case Studies, SIAM Press, Philadelphia, 2009.  
+[2] Avolio, A. P., A model of the human arterial system was constructed based on the anatomical journal article. Medical and  Biological Engineering and Computing 1980;18(6):709-18  
+[3] Freitas, Robert A. Nanomedicine, Volume I: Basic Capabilities. Austin: Landes Bioscience, 1999. Web.
 
 
 ## Contributing
