@@ -11,12 +11,12 @@ Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-dr
 1. Initial commits including all in-class labs and projects to github.
 2. Decide to move forward from Project 3
 
-#### Project 1
+#### Segregation
 1. Use cellular automata to model human migration and segregation
 2. Parameters like size of world MxN and probability of occupation and migration are included for simulation.
 3. Interaction enabled with Jupyter Notebook
 
-#### Project 2
+#### Diffusion of Infection and Campus Evacuation
 ##### Part A
 1. Use diffusion-based simulation and cellular automata to model propogation of infectious disease
 2. Use ODE solver to solver Ficks' second law  
@@ -28,7 +28,7 @@ Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-dr
 2. Topological data of real Gatech data is used to setup the world.
 3. Parameters like intersection mode, and randomness are enabled
 
-#### Project 3
+#### Generic Bacteria Simulation on Human Body
 1. Use biological data and VTK (Visuliation Tool Kit) to model and visualize human body, arterial system and organs [2][3]
 2. Offer cellcluster and host interface for organs, immune and bacterial clusters
 3. Create test immune and bacterial clusters for simulation
