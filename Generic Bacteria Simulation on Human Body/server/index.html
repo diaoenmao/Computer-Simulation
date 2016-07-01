@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>Human Generic Bacterial Simulator</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+			#axes  {
+			    width: 80px;
+			    height: 80px;
+			    background-color: transparent;
+			    border: none;
+			    margin: 20px;
+			    padding: 0px;
+			    position: absolute;
+			    left: 0px;
+			    bottom: 0px;
+			    z-index: 100;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="axes"></div>
+		<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+		<script src="vendor/three.js"></script>
+		<script src="vendor/TrackballControls.js"></script>
+		<script src="vendor/OBJLoader.js"></script>
+		<script src="js/MyCylinderBufferGeometry.js"></script>
+		<script src="js/index.js"></script>
+	</body>
+</html>
