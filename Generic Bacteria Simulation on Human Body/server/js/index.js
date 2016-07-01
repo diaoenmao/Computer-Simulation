@@ -98,6 +98,9 @@ function render() {
 
 window.addEventListener('resize', onWindowResize, false);
 animate();
+$("#reset").click(function() {
+	controls.reset();
+});
 
 function setStartEndNodes(node) {
 	var radians = function(deg) {
