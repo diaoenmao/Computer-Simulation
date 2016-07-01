@@ -58,7 +58,6 @@ class Node(AbstractHost):
             assert len(self.edges) == 0
         self._tail = isTail
         if self._tail and len(self._sinks) == 0:
-            print("Creating sink for node id: " + str(self.id))
             genericSink = GenericSink("Sink for Node id: " + str(self.id) + ", " + self.name, None)
             cNaught = (self.youngs_modulus * self.wall_thickness / (2 * parameters.blood_density * self.radius)) ** 0.5
             zNaught = parameters.blood_density * cNaught / (1 - parameters.poission_ratio) ** 0.5 

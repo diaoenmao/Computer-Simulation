@@ -229,3 +229,26 @@ $.getJSON('assets/blood_vessels.json', function(data) {
 		scene.add(cylinder);
 	}
 });
+
+$(document).ready(function() {
+	var socket = null;
+	var isopen = false;
+	socket = new WebSocket("ws://127.0.0.1:8080/ws");
+
+	socket.onopen = function() {
+		console.log("Connected!");
+		isopen = true;
+	};
+
+	socket.onclose = function(e) {
+		console.log("Connection closed.");
+		socket = null;
+		isopen = false;
+	};
+
+	socket.onmessage = function(e) {
+		if (typeof e.data == "string") {
+			console.log("Text message received: " + e.data);
+		}
+	};
+});

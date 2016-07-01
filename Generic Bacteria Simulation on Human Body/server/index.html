@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans|Droid+Sans' rel='stylesheet' type='text/css'>
 		<meta charset=utf-8>
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<title>Human Generic Bacterial Simulator</title>
@@ -26,12 +27,37 @@
 			    bottom: 0px;
 			    z-index: 100;
 			}
+			#timer{
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				margin: 10px;
+				z-index: 100;
+				color: white;
+				font-size: 50px;
+				font-family: 'Open Sans', sans-serif;
+			}
+			#mask{
+				width: 100%;
+				margin: 0px;
+				position:absolute;
+				top: 50%;
+				z-index: 100;
+				text-align: center;
+			    background-color: transparent;
+			    font-size: 64px;
+			    color:gray;
+				font-family: 'Open Sans', sans-serif;
+			}
 		</style>
 	</head>
 	<body>
+		<div id="mask">Connecting...</div>
 		<div id="axes"></div>
+		<div id="timer">Time:</div>
 		<button id="reset">Reset</button>
 		<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+		<script src="https://autobahn.s3.amazonaws.com/autobahnjs/latest/autobahn.min.jgz"></script>
 		<script src="vendor/three.js"></script>
 		<script src="vendor/TrackballControls.js"></script>
 		<script src="vendor/OBJLoader.js"></script>

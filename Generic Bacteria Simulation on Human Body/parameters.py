@@ -7,7 +7,7 @@ class Parameter:
 parameters = Parameter()
 
 #debug
-parameters.verbose = True
+parameters.verbose = False
 
 #import file
 parameters.body_mesh_file = '/data/body_mesh.obj'
