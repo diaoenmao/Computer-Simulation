@@ -26,7 +26,7 @@ scene2.add(axes);
 var material = new THREE.MeshPhongMaterial({
 	color: 0xFEB786,
 	transparent: true,
-	opacity: 0.6
+	opacity: 0.4
 });
 
 var manager = new THREE.LoadingManager();
@@ -185,7 +185,8 @@ $.getJSON('assets/blood_vessels.json', function(data) {
 	for (var i = 0; i < data.length; i++) {
 		var geometry = new THREE.MyCylinderBufferGeometry(data[i].radius * VISUALIZATION_FACTOR, data[i].start, data[i].end);
 		var material = new THREE.MeshBasicMaterial({
-			color: 0x8A0707
+			color: 0x8A0707,
+			side: THREE.DoubleSide
 		});
 		var cylinder = new THREE.Mesh(geometry, material);
 

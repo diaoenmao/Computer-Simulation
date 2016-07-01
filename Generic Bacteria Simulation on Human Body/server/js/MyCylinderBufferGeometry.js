@@ -41,7 +41,7 @@ THREE.MyCylinderBufferGeometry = function(radius, start, end, radialSegments, he
 	var index = 0,
 		indexOffset = 0,
 		indexArray = [],
-		height = Math.abs(start.y - end.y);
+		height = end.y - start.y;
 
 	var halfHeight = height / 2;
 
@@ -51,8 +51,8 @@ THREE.MyCylinderBufferGeometry = function(radius, start, end, radialSegments, he
 	// generate geometry
 
 	generateTorso();
-	//generateCap();
-	//generateCap(true);
+	generateCap();
+	generateCap(true);
 	// build geometry
 
 	this.setIndex(indices);
@@ -86,7 +86,8 @@ THREE.MyCylinderBufferGeometry = function(radius, start, end, radialSegments, he
 		var tanTheta = (end.x - start.x) / height;
 
 		// generate vertices, normals and uvs
-
+		var diff = (start.x - end.x) / heightSegments;
+		var diffz = (start.z - end.z) / heightSegments;
 		for (y = 0; y <= heightSegments; y++) {
 
 			var indexRow = [];
@@ -99,18 +100,18 @@ THREE.MyCylinderBufferGeometry = function(radius, start, end, radialSegments, he
 				var u = x / radialSegments;
 
 				// vertex
-				vertex.x = start.x + radius * Math.sin(u * 2 * Math.PI);
+				vertex.x = start.x + radius * Math.sin(u * 2 * Math.PI) - diff * y;
 				vertex.y = start.y + v * height;
-				vertex.z = start.z + radius * Math.cos(u * 2 * Math.PI);
+				vertex.z = start.z + radius * Math.cos(u * 2 * Math.PI) - diffz * y;
 				vertices.setXYZ(index, vertex.x, vertex.y, vertex.z);
 
-				// normal
-				// normal.copy(vertex);
-				// normal.setY(Math.sqrt(normal.x * normal.x + normal.z * normal.z) * tanTheta).normalize();
-				// normals.setXYZ(index, -normal.x, -normal.y, -normal.z);
+				//normal
+				normal.copy(vertex);
+				normal.setY(Math.sqrt(normal.x * normal.x + normal.z * normal.z) * tanTheta).normalize();
+				normals.setXYZ(index, normal.x, normal.y, normal.z);
 
-				// uv
-				//uvs.setXY(index, u, 1 - v);
+				//uv
+				uvs.setXY(index, u, 1 - v);
 
 				// save index of vertex in respective row
 				indexRow.push(index);
@@ -223,7 +224,7 @@ THREE.MyCylinderBufferGeometry = function(radius, start, end, radialSegments, he
 			// vertex
 			vertex.x = (top ? start.x : end.x) + radius * sinTheta;
 			vertex.y = top ? start.y : end.y;
-			vertex.z = (top ? start.x : end.x) + radius * cosTheta;
+			vertex.z = (top ? start.z : end.z) + radius * cosTheta;
 			vertices.setXYZ(index, vertex.x, vertex.y, vertex.z);
 
 			// normal
