@@ -22,12 +22,13 @@ camera2.up = camera.up;
 var axes = new THREE.AxisHelper(100);
 scene2.add(axes);
 
-
+var bodyMeshOpacity = 0.4;
 var material = new THREE.MeshPhongMaterial({
 	color: 0xFEB786,
 	transparent: true,
-	opacity: 0.4
+	opacity: bodyMeshOpacity
 });
+var bodyMesh;
 
 var manager = new THREE.LoadingManager();
 manager.onProgress = function(item, loaded, total) {
@@ -45,6 +46,7 @@ var onError = function(xhr) {};
 
 var loader = new THREE.OBJLoader(manager);
 loader.load('assets/body_mesh.obj', function(object) {
+	bodyMesh = object;
 	object.traverse(function(child) {
 		if (child instanceof THREE.Mesh) {
 			child.material = material;
@@ -100,6 +102,37 @@ window.addEventListener('resize', onWindowResize, false);
 animate();
 $("#reset").click(function() {
 	controls.reset();
+});
+
+$(document).keypress(function(event) {
+	if (!bodyMesh) {
+		return;
+	}
+	if (event.which == 43) {
+		bodyMeshOpacity += 0.1;
+		if (bodyMeshOpacity > 1) {
+			bodyMeshOpacity = 1;
+			return;
+		}
+		bodyMesh.traverse(function(child) {
+			if (child instanceof THREE.Mesh) {
+				child.material.opacity = bodyMeshOpacity;
+			}
+		});
+		event.preventDefault();
+	} else if (event.which == 95) {
+		bodyMeshOpacity -= 0.1;
+		if (bodyMeshOpacity < 0) {
+			bodyMeshOpacity = 0;
+			return;
+		}
+		bodyMesh.traverse(function(child) {
+			if (child instanceof THREE.Mesh) {
+				child.material.opacity = bodyMeshOpacity;
+			}
+		});
+		event.preventDefault();
+	}
 });
 
 function setStartEndNodes(node) {
