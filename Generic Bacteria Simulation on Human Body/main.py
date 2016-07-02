@@ -17,6 +17,7 @@ from twisted.internet import reactor
 from twisted.web.server import Site
 from twisted.web.static import File
 from autobahn.twisted.resource import WebSocketResource
+import json
 
 #dfs
 def timestep(o):
@@ -33,10 +34,10 @@ def simulate():
         print("Starting simulation")
     while(True):
         if SocketServerProtocol.connection is not None:
-            s = "Test"
-            payload = s.encode('utf8')
+            payload = {};
+            payload['time'] = globals.time;
+            payload = json.dumps(payload).encode('utf8')
             SocketServerProtocol.connection.sendMessage(payload, False)
-            print("sending message")
         else:
             print("Protocol is none")
 

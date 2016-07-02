@@ -1,5 +1,5 @@
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(75, $("#left").innerWidth() / $("#left").innerHeight(), 0.1, 1000);
 
 var CANVAS_WIDTH = 80,
 	CANVAS_HEIGHT = 80,
@@ -8,14 +8,14 @@ var CANVAS_WIDTH = 80,
 
 
 var renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+renderer.setSize($("#left").innerWidth(), $("#left").innerHeight());
+$("#left").append(renderer.domElement);
 
 //axes
-var container = document.getElementById('axes');
+var container = $("#axes");
 var renderer2 = new THREE.WebGLRenderer();
 renderer2.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
-container.appendChild(renderer2.domElement);
+container.append(renderer2.domElement);
 var scene2 = new THREE.Scene();
 var camera2 = new THREE.PerspectiveCamera(50, CANVAS_WIDTH / CANVAS_HEIGHT, 1, 1000);
 camera2.up = camera.up;
@@ -73,6 +73,9 @@ camera.position.z = 20;
 var controls = new THREE.TrackballControls(camera);
 controls.addEventListener('change', render);
 
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+var objects = [];
 
 function animate() {
 	requestAnimationFrame(animate);
@@ -88,9 +91,9 @@ function animate() {
 }
 
 function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.aspect = $("#left").innerWidth() / $("#left").innerHeight();
 	camera.updateProjectionMatrix();
-	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setSize($("#left").innerWidth(), $("#left").innerHeight());
 }
 
 function render() {
@@ -98,10 +101,48 @@ function render() {
 	renderer2.render(scene2, camera2);
 }
 
+var lastSelection;
+var lastSelectionColor;
+
+function onDocumentMouseDown(event) {
+
+	event.preventDefault();
+
+	mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+	mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+	raycaster.setFromCamera(mouse, camera);
+
+	var intersects = raycaster.intersectObjects(objects);
+	if (intersects.length > 0 && lastSelection != intersects[0]) {
+		//Show div
+		$("#objectLabel").text(intersects[0].object.node.name);
+		$("#right").css('display', 'block');
+		$("#left").css('width', '60%');
+		$("#arrow").css('display', 'block');
+		onWindowResize();
+		if (lastSelection) {
+			lastSelection.object.material.color.setHex(lastSelectionColor);
+		}
+		lastSelection = intersects[0]
+		lastSelectionColor = intersects[0].object.material.color.getHex();
+		intersects[0].object.material.color.setHex(0xf2cd00);
+	}
+}
+
 window.addEventListener('resize', onWindowResize, false);
+document.addEventListener('mousedown', onDocumentMouseDown, false);
+
 animate();
 $("#reset").click(function() {
 	controls.reset();
+});
+
+$("#arrow").mouseenter(function() {
+	controls.enabled = false;
+	console.log("asadsad");
+}).mouseleave(function() {
+	controls.enabled = true;
 });
 
 $(document).keypress(function(event) {
@@ -225,11 +266,74 @@ $.getJSON('assets/blood_vessels.json', function(data) {
 			side: THREE.DoubleSide
 		});
 		var cylinder = new THREE.Mesh(geometry, material);
-
+		cylinder.node = data[i];
+		objects.push(cylinder);
 		scene.add(cylinder);
 	}
 });
 
+var config = {
+	type: 'line',
+	data: {
+		datasets: [{
+			label: "",
+			data: [2, 3, 5, 1],
+			fill: true
+		}]
+	},
+	options: {
+		responsive: true,
+		title: {
+			display: true,
+			text: "Chart.js Time Point Data"
+		},
+		scales: {
+			xAxes: [{
+				type: "time",
+				display: true,
+				scaleLabel: {
+					display: true,
+					labelString: 'Date'
+				}
+			}],
+			yAxes: [{
+				display: true,
+				scaleLabel: {
+					display: true,
+					labelString: 'value'
+				}
+			}]
+		}
+	}
+};
+
+// $.each(config.data.datasets, function(i, dataset) {
+// 	dataset.borderColor = randomColor(0.4);
+// 	dataset.backgroundColor = randomColor(0.5);
+// 	dataset.pointBorderColor = randomColor(0.7);
+// 	dataset.pointBackgroundColor = randomColor(0.5);
+// 	dataset.pointBorderWidth = 1;
+// });
+
+
+// $('#addData').click(function() {
+// 	if (config.data.datasets.length > 0) {
+// 		var lastTime = myLine.scales['x-axis-0'].labelMoments[0].length ? myLine.scales['x-axis-0'].labelMoments[0][myLine.scales['x-axis-0'].labelMoments[0].length - 1] : moment();
+// 		var newTime = lastTime
+// 			.clone()
+// 			.add(1, 'day')
+// 			.format('MM/DD/YYYY HH:mm');
+
+// 		for (var index = 0; index < config.data.datasets.length; ++index) {
+// 			config.data.datasets[index].data.push({
+// 				x: newTime,
+// 				y: randomScalingFactor()
+// 			});
+// 		}
+
+// 		window.myLine.update();
+// 	}
+// });
 $(document).ready(function() {
 	var socket = null;
 	var isopen = false;
@@ -238,17 +342,22 @@ $(document).ready(function() {
 	socket.onopen = function() {
 		console.log("Connected!");
 		isopen = true;
+		$("#mask").hide();
 	};
 
 	socket.onclose = function(e) {
 		console.log("Connection closed.");
 		socket = null;
 		isopen = false;
+		$("#mask").show();
 	};
 
 	socket.onmessage = function(e) {
 		if (typeof e.data == "string") {
-			console.log("Text message received: " + e.data);
+			var payload = JSON.parse(e.data);
+			$("#timer").text("Time: " + payload.time);
 		}
 	};
+	var ctx = $("#chart");
+	window.myLine = new Chart(ctx, config);
 });
