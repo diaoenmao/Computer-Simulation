@@ -137,11 +137,14 @@ function onDocumentMouseDown(event) {
 		lastSelectionColor = intersects[0].object.material.color.getHex();
 		intersects[0].object.material.color.setHex(0xf2cd00);
 		config.data.datasets[0].data = intersects[0].object.node.bloodFlow.array;
+		config2.data.datasets[0].data = intersects[0].object.node.bacteriaCount.array;
 		if (!window.myLine) {
 			window.myLine = new Chart($("#chart"), config);
+			window.myLine2 = new Chart($("#chart2"), config2);
+
 		} else {
-			config.options.scales.xAxes.min = config.data.datasets[0].data[0].x;
 			window.myLine.update();
+			window.myLine2.update();
 		}
 	}
 }
@@ -161,10 +164,13 @@ $("#arrow").draggable({
 		$("#right").css('width', (window.innerWidth - $("#left").innerWidth()) + 'px');
 		$("#chart").css('width', $("#right").innerWidth());
 		$("#chart").attr('width', $("#right").innerWidth());
+		$("#chart2").css('width', $("#right").innerWidth());
+		$("#chart2").attr('width', $("#right").innerWidth());
 		onWindowResize();
 	},
 	stop: function() {
 		window.myLine = new Chart($("#chart"), config);
+		window.myLine2 = new Chart($("#chart2"), config2);
 	}
 }).mouseenter(function() {
 	controls.enabled = false;
@@ -290,6 +296,8 @@ $.getJSON('assets/blood_vessels.json', function(data) {
 	nodes = data;
 	for (var i = 0; i < data.length; i++) {
 		data[i].bloodFlow = new FixedSizeArray(100);
+		data[i].bacteriaCount = new FixedSizeArray(100);
+
 		var geometry = new THREE.MyCylinderBufferGeometry(data[i].radius * VISUALIZATION_FACTOR, data[i].start, data[i].end);
 		var material = new THREE.MeshBasicMaterial({
 			color: 0x8A0707,
@@ -345,6 +353,49 @@ var config = {
 	}
 };
 
+var config2 = {
+	type: 'line',
+	data: {
+		datasets: [{
+			label: "",
+			data: [],
+			backgroundColor: "rgba(255,99,132,0.2)",
+			fill: true,
+			pointBorderWidth: 1
+		}]
+	},
+	options: {
+		responsive: true,
+		animation: false,
+		responsiveAnimationDuration: 500,
+		maintainAspectRatio: true,
+		title: {
+			display: true,
+			text: "Bacteria Count vs. Time"
+		},
+		scales: {
+			xAxes: [{
+				type: "linear",
+				position: 'bottom',
+				display: true,
+				stepSize: 1,
+				maxTicksLimit: 20,
+				scaleLabel: {
+					display: true,
+					labelString: 'Time'
+				}
+			}],
+			yAxes: [{
+				display: true,
+				scaleLabel: {
+					display: true,
+					labelString: 'Bacteria Count'
+				}
+			}]
+		}
+	}
+};
+
 $(document).ready(function() {
 	var socket = null;
 	var isopen = false;
@@ -367,16 +418,26 @@ $(document).ready(function() {
 		if (typeof e.data == "string") {
 			var payload = JSON.parse(e.data);
 			$("#timer").text("Time: " + payload.time);
-			var keys = Object.keys(payload.data);
+			var keys = Object.keys(payload.data.bloodFlow);
 			for (var i = 0; i < keys.length; i++) {
 				var key = keys[i];
 				nodes[key - 1].bloodFlow.push({
 					x: payload.time,
-					y: payload.data[key]
+					y: payload.data.bloodFlow[key]
+				});
+			}
+
+			keys = Object.keys(payload.data.bacteriaCount);
+			for (var i = 0; i < keys.length; i++) {
+				var key = keys[i];
+				nodes[key - 1].bacteriaCount.push({
+					x: payload.time,
+					y: payload.data.bacteriaCount[key]
 				});
 			}
 			if (window.myLine) {
 				window.myLine.update();
+				window.myLine2.update();
 			}
 		}
 	};

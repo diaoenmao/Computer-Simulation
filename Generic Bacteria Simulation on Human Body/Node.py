@@ -155,7 +155,7 @@ class Node(AbstractHost):
         if globals.time % parameters.flow_history_interval == 0:
             self.flowHistory.append(flow)
         self.lastFlow = flow
-        globals.payload['data'][self.id] = flow;
+        globals.payload['data']['bloodFlow'][self.id] = flow;
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity
@@ -170,6 +170,7 @@ class Node(AbstractHost):
     def timeStep(self):
         if globals.time % parameters.cell_count_history_interval == 0:
             self.bacteriaCountHistory.append(self.getBacteriaCount())
+        globals.payload['data']['bacteriaCount'][self.id] = self.getBacteriaCount()
 
         assert(len(self.edges) > 0 or len(self._sinks) > 0)
         hosts = self.getChildren()
