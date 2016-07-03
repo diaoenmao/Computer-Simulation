@@ -155,6 +155,7 @@ class Node(AbstractHost):
         if globals.time % parameters.flow_history_interval == 0:
             self.flowHistory.append(flow)
         self.lastFlow = flow
+        globals.payload['data'][self.id] = flow;
         return flow
 
     def setParent(self, p): #may be used to calculate this velocity

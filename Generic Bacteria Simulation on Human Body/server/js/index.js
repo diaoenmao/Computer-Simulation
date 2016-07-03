@@ -77,6 +77,8 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var objects = [];
 
+var originalArrowLeft = 0.6 * window.innerWidth;
+
 function animate() {
 	requestAnimationFrame(animate);
 	camera.lookAt(scene.position);
@@ -94,6 +96,9 @@ function onWindowResize() {
 	camera.aspect = $("#left").innerWidth() / $("#left").innerHeight();
 	camera.updateProjectionMatrix();
 	renderer.setSize($("#left").innerWidth(), $("#left").innerHeight());
+	var rightWidth = window.innerWidth - $("#left").innerWidth();
+
+	$("#right").css('width', rightWidth);
 }
 
 function render() {
@@ -138,9 +143,21 @@ $("#reset").click(function() {
 	controls.reset();
 });
 
-$("#arrow").mouseenter(function() {
+$("#arrow").draggable({
+	axis: "x",
+	drag: function(event, ui) {
+		$("#left").css('width', ui.position.left + originalArrowLeft + 'px');
+		$("#right").css('width', (window.innerWidth - $("#left").innerWidth()) + 'px');
+		$("#chart").css('width', $("#right").innerWidth());
+		$("#chart").attr('width', $("#right").innerWidth());
+		onWindowResize();
+	},
+	stop: function() {
+		window.myLine = new Chart($("#chart"), config);
+
+	}
+}).mouseenter(function() {
 	controls.enabled = false;
-	console.log("asadsad");
 }).mouseleave(function() {
 	controls.enabled = true;
 });
@@ -277,44 +294,46 @@ var config = {
 	data: {
 		datasets: [{
 			label: "",
-			data: [2, 3, 5, 1],
-			fill: true
+			data: [{
+				x: 1,
+				y: 2
+			}, {
+				x: 2,
+				y: 3
+			}, {
+				x: 3,
+				y: 5
+			}, {
+				x: 4,
+				y: 1
+			}],
+			backgroundColor: "rgba(75,192,192,0.4)",
+			fill: true,
+			pointBorderWidth: 1
 		}]
 	},
 	options: {
 		responsive: true,
+		responsiveAnimationDuration: 500,
 		title: {
 			display: true,
-			text: "Chart.js Time Point Data"
+			text: "Blood Volume vs. Time"
 		},
 		scales: {
 			xAxes: [{
 				type: "time",
-				display: true,
-				scaleLabel: {
-					display: true,
-					labelString: 'Date'
-				}
+				display: false
 			}],
 			yAxes: [{
 				display: true,
 				scaleLabel: {
 					display: true,
-					labelString: 'value'
+					labelString: 'Volume'
 				}
 			}]
 		}
 	}
 };
-
-// $.each(config.data.datasets, function(i, dataset) {
-// 	dataset.borderColor = randomColor(0.4);
-// 	dataset.backgroundColor = randomColor(0.5);
-// 	dataset.pointBorderColor = randomColor(0.7);
-// 	dataset.pointBackgroundColor = randomColor(0.5);
-// 	dataset.pointBorderWidth = 1;
-// });
-
 
 // $('#addData').click(function() {
 // 	if (config.data.datasets.length > 0) {
@@ -334,6 +353,7 @@ var config = {
 // 		window.myLine.update();
 // 	}
 // });
+
 $(document).ready(function() {
 	var socket = null;
 	var isopen = false;
@@ -356,6 +376,7 @@ $(document).ready(function() {
 		if (typeof e.data == "string") {
 			var payload = JSON.parse(e.data);
 			$("#timer").text("Time: " + payload.time);
+			console.log(payload);
 		}
 	};
 	var ctx = $("#chart");

@@ -8,6 +8,8 @@
 		<title>Human Generic Bacterial Simulator</title>
 		<style>
 			body { margin: 0; }
+			canvas{ width: 100%; !important 
+				height: auto; !important}
 			#reset {
 				position: absolute;
 				right: 0px;
@@ -68,6 +70,7 @@
 			}
 			#objectLabel{
 				margin-top: 100px;
+				margin-left: 5px;
 				color: white;
 				font-size: 40px;
 				font-family: 'Open Sans', sans-serif;
@@ -75,7 +78,7 @@
 		</style>
 	</head>
 	<body>
-		<div style="font-size: 20px; position: absolute; top: 0px; width: 100%; color: white; display: none" id="arrow"><div style="margin-left: 60%">↔</div></div>
+		<div style="font-size: 20px; position: absolute; top: 0px; width: 100%; color: white; display: none" id="arrow"><div style="right: 40%;position:absolute">↔</div></div>
 		<div>
 			<div id="left">
 				<div id="mask">Connecting...</div>
@@ -90,6 +93,7 @@
 		</div>
 		<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 		<script src="https://autobahn.s3.amazonaws.com/autobahnjs/latest/autobahn.min.jgz"></script>
 		<script src="vendor/three.js"></script>
 		<script src="vendor/TrackballControls.js"></script>

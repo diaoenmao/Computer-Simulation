@@ -34,9 +34,8 @@ def simulate():
         print("Starting simulation")
     while(True):
         if SocketServerProtocol.connection is not None:
-            payload = {};
-            payload['time'] = globals.time;
-            payload = json.dumps(payload).encode('utf8')
+            globals.payload['time'] = globals.time;
+            payload = json.dumps(globals.payload).encode('utf8')
             SocketServerProtocol.connection.sendMessage(payload, False)
         else:
             print("Protocol is none")
