@@ -1,7 +1,7 @@
 # Computer Simulation
 
 Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-driven conceptual model, etc.
-![Visulization](https://github.com/dem123456789/Computer-Simulation/blob/master/Project%203/pic/Screen%20Shot%202016-05-14%20at%2012.29.19%20AM.png "Visulization")
+![Visulization](https://raw.githubusercontent.com/dem123456789/Computer-Simulation/master/Generic%20Bacteria%20Simulation%20on%20Human%20Body/pic/Screen%20Shot%202016-05-14%20at%2012.38.40%20AM.png "Visulization")
 ## Introduction
 
 1. This Project is inspired by a course project from CX 4230 in Georgia Tech.
