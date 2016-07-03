@@ -9,7 +9,7 @@ FixedSizeArray.prototype.push = function(o) {
 	if (this.length > this.n) {
 		this.length = this.n;
 		this.array.shift();
-		this.array.push();
+		this.array.push(o);
 	} else {
 		this.array[this.length - 1] = o;
 	}

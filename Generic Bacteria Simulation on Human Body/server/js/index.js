@@ -108,6 +108,7 @@ function render() {
 
 var lastSelection;
 var lastSelectionColor;
+var showing = false;
 
 function onDocumentMouseDown(event) {
 
@@ -120,18 +121,28 @@ function onDocumentMouseDown(event) {
 
 	var intersects = raycaster.intersectObjects(objects);
 	if (intersects.length > 0 && lastSelection != intersects[0]) {
-		//Show div
 		$("#objectLabel").text(intersects[0].object.node.name);
-		$("#right").css('display', 'block');
-		$("#left").css('width', '60%');
-		$("#arrow").css('display', 'block');
-		onWindowResize();
+
+		//Show div
+		if (!showing) {
+			$("#right").css('display', 'block');
+			$("#left").css('width', '60%');
+			$("#arrow").css('display', 'block');
+			onWindowResize();
+		}
 		if (lastSelection) {
 			lastSelection.object.material.color.setHex(lastSelectionColor);
 		}
 		lastSelection = intersects[0]
 		lastSelectionColor = intersects[0].object.material.color.getHex();
 		intersects[0].object.material.color.setHex(0xf2cd00);
+		config.data.datasets[0].data = intersects[0].object.node.bloodFlow.array;
+		if (!window.myLine) {
+			window.myLine = new Chart($("#chart"), config);
+		} else {
+			config.options.scales.xAxes.min = config.data.datasets[0].data[0].x;
+			window.myLine.update();
+		}
 	}
 }
 
@@ -154,7 +165,6 @@ $("#arrow").draggable({
 	},
 	stop: function() {
 		window.myLine = new Chart($("#chart"), config);
-
 	}
 }).mouseenter(function() {
 	controls.enabled = false;
@@ -273,10 +283,13 @@ function buildGraph(blood_vessels) {
 	setStartEndNodes(start_node)
 }
 
+var nodes;
+
 $.getJSON('assets/blood_vessels.json', function(data) {
 	buildGraph(data);
-	console.log(data[0]);
+	nodes = data;
 	for (var i = 0; i < data.length; i++) {
+		data[i].bloodFlow = new FixedSizeArray(100);
 		var geometry = new THREE.MyCylinderBufferGeometry(data[i].radius * VISUALIZATION_FACTOR, data[i].start, data[i].end);
 		var material = new THREE.MeshBasicMaterial({
 			color: 0x8A0707,
@@ -294,19 +307,7 @@ var config = {
 	data: {
 		datasets: [{
 			label: "",
-			data: [{
-				x: 1,
-				y: 2
-			}, {
-				x: 2,
-				y: 3
-			}, {
-				x: 3,
-				y: 5
-			}, {
-				x: 4,
-				y: 1
-			}],
+			data: [],
 			backgroundColor: "rgba(75,192,192,0.4)",
 			fill: true,
 			pointBorderWidth: 1
@@ -314,15 +315,24 @@ var config = {
 	},
 	options: {
 		responsive: true,
+		animation: false,
 		responsiveAnimationDuration: 500,
+		maintainAspectRatio: true,
 		title: {
 			display: true,
 			text: "Blood Volume vs. Time"
 		},
 		scales: {
 			xAxes: [{
-				type: "time",
-				display: false
+				type: "linear",
+				position: 'bottom',
+				display: true,
+				stepSize: 1,
+				maxTicksLimit: 20,
+				scaleLabel: {
+					display: true,
+					labelString: 'Time'
+				}
 			}],
 			yAxes: [{
 				display: true,
@@ -334,25 +344,6 @@ var config = {
 		}
 	}
 };
-
-// $('#addData').click(function() {
-// 	if (config.data.datasets.length > 0) {
-// 		var lastTime = myLine.scales['x-axis-0'].labelMoments[0].length ? myLine.scales['x-axis-0'].labelMoments[0][myLine.scales['x-axis-0'].labelMoments[0].length - 1] : moment();
-// 		var newTime = lastTime
-// 			.clone()
-// 			.add(1, 'day')
-// 			.format('MM/DD/YYYY HH:mm');
-
-// 		for (var index = 0; index < config.data.datasets.length; ++index) {
-// 			config.data.datasets[index].data.push({
-// 				x: newTime,
-// 				y: randomScalingFactor()
-// 			});
-// 		}
-
-// 		window.myLine.update();
-// 	}
-// });
 
 $(document).ready(function() {
 	var socket = null;
@@ -376,9 +367,17 @@ $(document).ready(function() {
 		if (typeof e.data == "string") {
 			var payload = JSON.parse(e.data);
 			$("#timer").text("Time: " + payload.time);
-			console.log(payload);
+			var keys = Object.keys(payload.data);
+			for (var i = 0; i < keys.length; i++) {
+				var key = keys[i];
+				nodes[key - 1].bloodFlow.push({
+					x: payload.time,
+					y: payload.data[key]
+				});
+			}
+			if (window.myLine) {
+				window.myLine.update();
+			}
 		}
 	};
-	var ctx = $("#chart");
-	window.myLine = new Chart(ctx, config);
 });
