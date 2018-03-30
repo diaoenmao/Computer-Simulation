@@ -64,5 +64,3 @@ Computer Simulation Projects involving Cellular Automata, Event-driven, Agent-dr
 *Enmao Diao  
 HaoLi Du*
 
-## License
-Copyright (c) All Rights Reserved
